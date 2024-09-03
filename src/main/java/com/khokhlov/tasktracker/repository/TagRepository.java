@@ -18,7 +18,7 @@ public class TagRepository implements Repository<Tag, Long> {
     }
 
     public List<Tag> findAll(Session session) {
-        return session.createQuery("from Tag")
+        return session.createQuery("from Tag", Tag.class)
                 .list();
     }
 

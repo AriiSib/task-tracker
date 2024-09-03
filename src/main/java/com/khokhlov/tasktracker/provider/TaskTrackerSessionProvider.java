@@ -17,7 +17,7 @@ public class TaskTrackerSessionProvider implements SessionProvider {
         hibernateProperties.setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/tracker");
         hibernateProperties.setProperty("hibernate.connection.username", "arii");
         hibernateProperties.setProperty("hibernate.connection.password", "arii");
-        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "validate");
+        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create");
         hibernateProperties.setProperty("hibernate.show_sql", "true");
         hibernateProperties.setProperty("hibernate.highlight_sql", "true");
         hibernateProperties.setProperty("hibernate.format_sql", "true");

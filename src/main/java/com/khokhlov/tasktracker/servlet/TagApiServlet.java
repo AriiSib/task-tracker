@@ -4,17 +4,17 @@ import java.io.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.khokhlov.tasktracker.service.TagService;
-import com.khokhlov.tasktracker.service.UserService;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
+import static com.khokhlov.tasktracker.consts.Consts.*;
+
+
 @WebServlet(name = "tagApiServlet", value = "/api/tags")
 public class TagApiServlet extends HttpServlet implements Servlet {
-    private String message;
-    private UserService userService;
     private TagService tagService;
     private ObjectMapper objectMapper;
 
@@ -22,9 +22,8 @@ public class TagApiServlet extends HttpServlet implements Servlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         ServletContext context = config.getServletContext();
-        userService = (UserService) context.getAttribute("userService");
-        tagService = (TagService) context.getAttribute("tagService");
-        objectMapper = (ObjectMapper) context.getAttribute("objectMapper");
+        tagService = (TagService) context.getAttribute(TAG_SERVICE);
+        objectMapper = (ObjectMapper) context.getAttribute(OBJECT_MAPPER);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

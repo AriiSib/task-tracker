@@ -27,7 +27,7 @@ public class UserService {
         }
     }
 
-    public void saveUser(UserDTO userDTO) {
+    public void registerUser(UserDTO userDTO) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -35,7 +35,9 @@ public class UserService {
             userRepository.save(user, session);
             transaction.commit();
         } catch (HibernateException e) {
-            transaction.rollback();
+            if (transaction != null) {
+                transaction.rollback();
+            }
         }
     }
 }
