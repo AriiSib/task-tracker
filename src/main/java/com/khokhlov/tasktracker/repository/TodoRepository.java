@@ -12,11 +12,11 @@ public class TodoRepository implements Repository<Todo, Long> {
         return Optional.empty();
     }
 
-//    public Optional<Todo> findById(Long id, Session session) {
-//        return session.createQuery("from Todo where id = :id", Todo.class)
-//                .setParameter("id", id)
-//                .uniqueResultOptional();
-//    }
+    public Optional<Todo> findById(Long id, Session session) {
+        return session.createQuery("from Todo where id = :id", Todo.class)
+                .setParameter("id", id)
+                .uniqueResultOptional();
+    }
 
     @Override
     public List<Todo> findAll() {
@@ -49,6 +49,12 @@ public class TodoRepository implements Repository<Todo, Long> {
     @Override
     public void deleteById(Long aLong) {
 
+    }
+
+    public void deleteById(Long id, Session session) {
+        session.createNativeQuery("DELETE FROM Todo WHERE id = :id", Todo.class)
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override

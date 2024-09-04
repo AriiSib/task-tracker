@@ -19,11 +19,11 @@ public class TodoService {
     private final TodoMapper todoMapper;
 
 
-//    public Optional<Todo> getTodoById(Long id) {
-//        try(Session session = sessionFactory.openSession()) {
-//            return todoRepository.findById(id, session);
-//        }
-//    }
+    public TodoDTO getTodoById(Long id) {
+        try(Session session = sessionFactory.openSession()) {
+            return todoMapper.toDto(todoRepository.findById(id, session).get());
+        }
+    }
 
     public List<TodoDTO> getAllTodo() {
         try (Session session = sessionFactory.openSession()) {
@@ -62,19 +62,30 @@ public class TodoService {
         }
     }
 
-    public Todo updateTodo(TodoDTO todoDTO) {
+    public void deleteTodoById(Long id) {
         Transaction transaction = null;
-        Todo newTodo = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            Todo todo = todoMapper.toEntity(todoDTO);
-            newTodo = todoRepository.update(todo, session);
+            todoRepository.deleteById(id, session);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
         }
-        return newTodo;
+    }
+
+    public void updateTodo(TodoDTO todoDTO) {
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Todo todo = todoMapper.toEntity(todoDTO);
+            todoRepository.update(todo, session);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
     }
 }

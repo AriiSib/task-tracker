@@ -12,7 +12,7 @@
 
 <jsp:include page="header.jsp"></jsp:include>
 <div class="container col-md-8 col-md-offset-3" style="overflow: auto">
-  <h1>Log into To-Do List</h1>
+  <h1>Log in To-Do List</h1>
   <form action="<%=request.getContextPath()%>/login" method="post">
 
     <div class="form-group">

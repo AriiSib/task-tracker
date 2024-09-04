@@ -11,7 +11,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "todos")
 public class Todo {
@@ -35,22 +36,22 @@ public class Todo {
     private boolean status;
 
 
-    public Todo(long id, String title, String username, String description, LocalDate targetDate, boolean isDone) {
-        this.id = id;
-        this.title = title;
-        this.username = username;
-        this.description = description;
-        this.targetDate = targetDate;
-        this.status = isDone;
-    }
-
-    public Todo(String title, String username, String description, LocalDate targetDate, boolean isDone) {
-        this.title = title;
-        this.username = username;
-        this.description = description;
-        this.targetDate = targetDate;
-        this.status = isDone;
-    }
+//    public Todo(long id, String title, String username, String description, LocalDate targetDate, boolean isDone) {
+//        this.id = id;
+//        this.title = title;
+//        this.username = username;
+//        this.description = description;
+//        this.targetDate = targetDate;
+//        this.status = isDone;
+//    }
+//
+//    public Todo(String title, String username, String description, LocalDate targetDate, boolean isDone) {
+//        this.title = title;
+//        this.username = username;
+//        this.description = description;
+//        this.targetDate = targetDate;
+//        this.status = isDone;
+//    }
 
 
     @Override

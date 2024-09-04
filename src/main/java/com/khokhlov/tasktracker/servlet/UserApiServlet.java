@@ -57,6 +57,6 @@ public class UserApiServlet extends HttpServlet implements Servlet {
         userService.registerUser(userDTO);
         resp.setStatus(HttpServletResponse.SC_CREATED);
 
-        req.getRequestDispatcher("register/register.jsp").forward(req, resp);
+        req.getRequestDispatcher("/login.jsp").forward(req, resp);
     }
 }

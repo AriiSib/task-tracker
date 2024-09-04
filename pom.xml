@@ -23,6 +23,9 @@
         <postgresql.driver.version>42.7.4</postgresql.driver.version>
         <compiler-plugin.verison>3.13.0</compiler-plugin.verison>
         <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
+        <jstl-api.version>3.0.0</jstl-api.version>
+        <jstl.version>3.0.1</jstl.version>
+        <jakartaee-web-api.version>10.0.0</jakartaee-web-api.version>
         <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
         <junit.version>5.11.0-M2</junit.version>
     </properties>
@@ -63,6 +66,22 @@
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <version>${jakarta.servlet-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>${jstl-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>${jstl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+            <version>${jakartaee-web-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

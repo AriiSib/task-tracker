@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
@@ -14,9 +12,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class User{
 
     @Id
     @SequenceGenerator(name = "user_seq",
