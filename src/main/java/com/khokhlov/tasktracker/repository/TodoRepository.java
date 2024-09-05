@@ -52,7 +52,7 @@ public class TodoRepository implements Repository<Todo, Long> {
     }
 
     public void deleteById(Long id, Session session) {
-        session.createNativeQuery("DELETE FROM Todo WHERE id = :id", Todo.class)
+        session.createNativeQuery("DELETE FROM todos WHERE id = :id")
                 .setParameter("id", id)
                 .executeUpdate();
     }

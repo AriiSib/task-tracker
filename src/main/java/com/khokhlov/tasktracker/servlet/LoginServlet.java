@@ -28,7 +28,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.sendRedirect("login.jsp");
+        req.getRequestDispatcher("login.jsp").forward(req, resp);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
 
         try {
             if (loginService.validate(login)) {
-                req.getRequestDispatcher("todo-list.jsp").forward(req, resp);
+                resp.sendRedirect(req.getContextPath() + "/list");
             } else {
                 req.setAttribute("errorMessage", "Invalid username or password");
                 req.getRequestDispatcher("login.jsp").forward(req, resp);

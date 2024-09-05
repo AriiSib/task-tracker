@@ -28,30 +28,16 @@ public class Todo {
 
     private String username;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     private String description;
 
     @Column(name = "target_date")
     private LocalDate targetDate;
 
     private boolean status;
-
-
-//    public Todo(long id, String title, String username, String description, LocalDate targetDate, boolean isDone) {
-//        this.id = id;
-//        this.title = title;
-//        this.username = username;
-//        this.description = description;
-//        this.targetDate = targetDate;
-//        this.status = isDone;
-//    }
-//
-//    public Todo(String title, String username, String description, LocalDate targetDate, boolean isDone) {
-//        this.title = title;
-//        this.username = username;
-//        this.description = description;
-//        this.targetDate = targetDate;
-//        this.status = isDone;
-//    }
 
 
     @Override

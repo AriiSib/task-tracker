@@ -97,7 +97,8 @@ public class TodoServlet extends HttpServlet {
         TodoDTO newTodo = new TodoDTO(null, title, username, description, targetDate, isDone);
 
         todoService.saveTodo(newTodo);
-        resp.sendRedirect("/list");
+
+        resp.sendRedirect(req.getContextPath() + "/list");
     }
 
     private void updateTodo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -115,12 +116,13 @@ public class TodoServlet extends HttpServlet {
 
         todoService.updateTodo(updateTodo);
 
-        resp.sendRedirect("/list");
+        resp.sendRedirect(req.getContextPath() + "/list");
     }
 
-    private void deleteTodo(HttpServletRequest req, HttpServletResponse resp) {
+    private void deleteTodo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long id = Long.parseLong(req.getParameter("id"));
         todoService.deleteTodoById(id);
+        resp.sendRedirect(req.getContextPath() + "/list");
     }
 
 }
