@@ -18,6 +18,12 @@ public class UserRepository implements Repository<User, Long> {
         return List.of();
     }
 
+    public Optional<User> findByUsername(String username, Session session) {
+        return session.createQuery("from User where username = :username", User.class)
+                .setParameter("username", username)
+                .uniqueResultOptional();
+    }
+
     public List<User> findAll(Session session) {
         return session.createQuery("from User", User.class)
                 .list();

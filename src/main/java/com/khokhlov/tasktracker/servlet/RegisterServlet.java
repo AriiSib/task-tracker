@@ -45,6 +45,7 @@ public class RegisterServlet extends HttpServlet implements Servlet {
         userService.registerUser(userDTO);
         resp.setStatus(HttpServletResponse.SC_CREATED);
 
-        req.getRequestDispatcher("/login.jsp").forward(req, resp);
+//        req.getRequestDispatcher("/login.jsp").forward(req, resp);
+        resp.sendRedirect(req.getContextPath() +"/login");
     }
 }

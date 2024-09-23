@@ -2,43 +2,45 @@ package com.khokhlov.tasktracker.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
-
 
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
-@Table(name = "todos")
-public class Todo {
-
+@Table(name = "comments")
+public class Comment {
     @Id
-    @SequenceGenerator(name = "todo_seq",
-            sequenceName = "todos_seq",
-            initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "todo_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
-    private String username;
+    @Column(nullable = false)
+    private String content;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "userId")
     private User user;
 
-    private String description;
+    @ManyToOne
+    @JoinColumn(name = "taskId")
+    private Task task;
 
-    @Column(name = "target_date")
-    private LocalDate targetDate;
+    @CreationTimestamp
+    @Column(name = "created", updatable = false)
+    private LocalDateTime createdAt;
 
-    private boolean status;
-
+    @UpdateTimestamp
+    @Column(name = "updated")
+    private LocalDateTime updatedAt;
 
     @Override
     public final boolean equals(Object o) {
@@ -47,8 +49,8 @@ public class Todo {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Todo todo = (Todo) o;
-        return getId() != null && Objects.equals(getId(), todo.getId());
+        Comment comment = (Comment) o;
+        return getId() != null && Objects.equals(getId(), comment.getId());
     }
 
     @Override

@@ -2,23 +2,22 @@ package com.khokhlov.tasktracker.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.khokhlov.tasktracker.mapper.TagMapper;
-import com.khokhlov.tasktracker.mapper.TodoMapper;
+import com.khokhlov.tasktracker.mapper.TaskMapper;
 import com.khokhlov.tasktracker.mapper.UserMapper;
 import com.khokhlov.tasktracker.provider.SessionProvider;
 import com.khokhlov.tasktracker.provider.TaskTrackerSessionProvider;
 import com.khokhlov.tasktracker.repository.LoginRepository;
 import com.khokhlov.tasktracker.repository.TagRepository;
-import com.khokhlov.tasktracker.repository.TodoRepository;
+import com.khokhlov.tasktracker.repository.TaskRepository;
 import com.khokhlov.tasktracker.repository.UserRepository;
 import com.khokhlov.tasktracker.service.LoginService;
 import com.khokhlov.tasktracker.service.TagService;
-import com.khokhlov.tasktracker.service.TodoService;
+import com.khokhlov.tasktracker.service.TaskService;
 import com.khokhlov.tasktracker.service.UserService;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
-import lombok.extern.java.Log;
 import org.hibernate.SessionFactory;
 
 import static com.khokhlov.tasktracker.consts.Consts.*;
@@ -37,22 +36,22 @@ public class AppContextListener implements ServletContextListener {
 
         LoginRepository loginRepository = new LoginRepository();
         UserRepository userRepository = new UserRepository();
-        TodoRepository todoRepository = new TodoRepository();
+        TaskRepository taskRepository = new TaskRepository();
         TagRepository tagRepository = new TagRepository();
 
         UserMapper userMapper = UserMapper.INSTANCE;
-        TodoMapper todoMapper = TodoMapper.INSTANCE;
+        TaskMapper taskMapper = TaskMapper.INSTANCE;
         TagMapper tagMapper = TagMapper.INSTANCE;
 
         LoginService loginService = new LoginService(sessionFactory, loginRepository);
         UserService userService = new UserService(sessionFactory, userRepository, userMapper);
-        TodoService todoService = new TodoService(sessionFactory, todoRepository, todoMapper);
+        TaskService taskService = new TaskService(sessionFactory, taskRepository, userService, taskMapper);
         TagService tagService = new TagService(sessionFactory, tagRepository, tagMapper);
 
         ctx.setAttribute(OBJECT_MAPPER, objectMapper);
         ctx.setAttribute(LOGIN_SERVICE, loginService);
         ctx.setAttribute(USER_SERVICE, userService);
-        ctx.setAttribute(TODO_SERVICE, todoService);
+        ctx.setAttribute(TASK_SERVICE, taskService);
         ctx.setAttribute(TAG_SERVICE, tagService);
 
         ServletContextListener.super.contextInitialized(sce);

@@ -9,6 +9,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.exception.DataException;
 
 import java.util.List;
 
@@ -27,6 +28,13 @@ public class UserService {
         }
     }
 
+    public User findByUsername(String username) {
+        try (Session session = sessionFactory.openSession()) {
+            return userRepository.findByUsername(username, session).orElseThrow(
+                    () -> new RuntimeException("User not found"));
+        }
+    }
+
     public void registerUser(UserDTO userDTO) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
@@ -34,6 +42,8 @@ public class UserService {
             User user = userMapper.toEntity(userDTO);
             userRepository.save(user, session);
             transaction.commit();
+        } catch (DataException e) {
+            System.err.println("Username too long!");
         } catch (HibernateException e) {
             if (transaction != null) {
                 transaction.rollback();

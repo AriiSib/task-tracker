@@ -5,7 +5,6 @@ import com.khokhlov.tasktracker.repository.LoginRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 
 @RequiredArgsConstructor
 public class LoginService {
@@ -14,17 +13,11 @@ public class LoginService {
     private final LoginRepository loginRepository;
 
     public boolean validate(Login login) {
-        Transaction transaction = null;
-        boolean isValidUser = false;
         try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-            isValidUser = loginRepository.validateUser(login, session);
-            transaction.commit();
+            return loginRepository.validateUser(login, session);
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
+            e.printStackTrace();
+            return false;
         }
-        return isValidUser;
     }
 }

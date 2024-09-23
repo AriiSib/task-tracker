@@ -1,7 +1,7 @@
 package com.khokhlov.tasktracker.servlet;
 
-import com.khokhlov.tasktracker.model.dto.TodoDTO;
-import com.khokhlov.tasktracker.service.TodoService;
+import com.khokhlov.tasktracker.model.dto.TaskDTO;
+import com.khokhlov.tasktracker.service.TaskService;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -13,20 +13,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 
-import static com.khokhlov.tasktracker.consts.Consts.TODO_SERVICE;
+import static com.khokhlov.tasktracker.consts.Consts.TASK_SERVICE;
 
-@WebServlet(name = "todoServlet", value = "/")
-public class TodoServlet extends HttpServlet {
-    private TodoService todoService;
+@WebServlet(name = "taskServlet", value = "/")
+public class TaskServlet extends HttpServlet {
+    private TaskService taskService;
 
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         ServletContext context = config.getServletContext();
-        todoService = (TodoService) context.getAttribute(TODO_SERVICE);
+        taskService = (TaskService) context.getAttribute(TASK_SERVICE);
     }
 
     @Override
@@ -39,22 +40,22 @@ public class TodoServlet extends HttpServlet {
                     showNewForm(req, resp);
                     break;
                 case "/save":
-                    saveTodo(req, resp);
+                    saveTask(req, resp);
                     break;
                 case "/delete":
-                    deleteTodo(req, resp);
+                    deleteTask(req, resp);
                     break;
                 case "/edit":
                     showEditForm(req, resp);
                     break;
                 case "/update":
-                    updateTodo(req, resp);
+                    updateTask(req, resp);
                     break;
                 case "/list":
-                    listTodo(req, resp);
+                    listTask(req, resp);
                     break;
                 default:
-                    req.getRequestDispatcher("/login.jsp").forward(req, resp);
+                    req.getRequestDispatcher(req.getContextPath() + "/login.jsp").forward(req, resp);
                     break;
             }
         } catch (Exception e) {
@@ -68,61 +69,64 @@ public class TodoServlet extends HttpServlet {
     }
 
 
-    private void listTodo(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<TodoDTO> listTodo = todoService.getAllTodo();
-        req.setAttribute("listTodo", listTodo);
-        req.getRequestDispatcher("/todo-list.jsp").forward(req, resp);
+    private void listTask(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<TaskDTO> listTask = taskService.getAllTask(req.getSession().getAttribute("username").toString());
+        req.setAttribute("listTask", listTask);
+        req.getRequestDispatcher(req.getContextPath() + "/task-list.jsp").forward(req, resp);
     }
 
     private void showNewForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/todo-form.jsp").forward(req, resp);
+        req.getRequestDispatcher(req.getContextPath() + "/task-form.jsp").forward(req, resp);
     }
 
     private void showEditForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Long id = Long.parseLong(req.getParameter("id"));
-        TodoDTO existingTodo = todoService.getTodoById(id);
-        req.setAttribute("todo", existingTodo);
-        req.getRequestDispatcher("/todo-form.jsp").forward(req, resp);
+        TaskDTO existingTask = taskService.getTaskById(id);
+        req.setAttribute("task", existingTask);
+        req.getRequestDispatcher(req.getContextPath() + "/task-form.jsp").forward(req, resp);
     }
 
-    private void saveTodo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void saveTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String title = req.getParameter("title");
-        String username = req.getParameter("username");
+        String username = req.getSession().getAttribute("username").toString();
         String description = req.getParameter("description");
         boolean isDone = Boolean.parseBoolean(req.getParameter("isDone"));
 
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate targetDate = LocalDate.parse(req.getParameter("targetDate"), df);
 
-        TodoDTO newTodo = new TodoDTO(null, title, username, description, targetDate, isDone);
+        TaskDTO newTask = new TaskDTO(null, title, description, targetDate, isDone, new HashSet<>(), new HashSet<>());
 
-        todoService.saveTodo(newTodo);
+        taskService.saveTask(newTask, username);
 
         resp.sendRedirect(req.getContextPath() + "/list");
     }
 
-    private void updateTodo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void updateTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long id = Long.parseLong(req.getParameter("id"));
 
         String title = req.getParameter("title");
-        String username = req.getParameter("username");
+        String username = req.getSession().getAttribute("username").toString();
         String description = req.getParameter("description");
         boolean isDone = Boolean.parseBoolean(req.getParameter("isDone"));
+
 
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate targetDate = LocalDate.parse(req.getParameter("targetDate"), df);
 
-        TodoDTO updateTodo = new TodoDTO(id, title, username, description, targetDate, isDone);
+        TaskDTO updateTask = new TaskDTO(id, title, description, targetDate, isDone, new HashSet<>(), new HashSet<>());
 
-        todoService.updateTodo(updateTodo);
+        taskService.updateTask(updateTask, username);
 
         resp.sendRedirect(req.getContextPath() + "/list");
     }
 
-    private void deleteTodo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void deleteTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long id = Long.parseLong(req.getParameter("id"));
-        todoService.deleteTodoById(id);
+        taskService.deleteTaskById(id);
         resp.sendRedirect(req.getContextPath() + "/list");
     }
+
+
 
 }

@@ -1,45 +1,47 @@
 package com.khokhlov.tasktracker.service;
 
-import com.khokhlov.tasktracker.mapper.TodoMapper;
-import com.khokhlov.tasktracker.model.dto.TodoDTO;
-import com.khokhlov.tasktracker.model.entity.Todo;
-import com.khokhlov.tasktracker.repository.TodoRepository;
+import com.khokhlov.tasktracker.mapper.TaskMapper;
+import com.khokhlov.tasktracker.model.dto.TaskDTO;
+import com.khokhlov.tasktracker.model.entity.Task;
+import com.khokhlov.tasktracker.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
-public class TodoService {
+public class TaskService {
     private final SessionFactory sessionFactory;
-    private final TodoRepository todoRepository;
-    private final TodoMapper todoMapper;
+    private final TaskRepository taskRepository;
+    private final UserService userService;
+    private final TaskMapper taskMapper;
 
 
-    public TodoDTO getTodoById(Long id) {
-        try(Session session = sessionFactory.openSession()) {
-            return todoMapper.toDto(todoRepository.findById(id, session).get());
+    public TaskDTO getTaskById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return taskMapper.toDto(taskRepository.findById(id, session).orElseThrow(
+                    () -> new RuntimeException("Task not found with id: " + id)));
         }
     }
 
-    public List<TodoDTO> getAllTodo() {
+    public List<TaskDTO> getAllTask(String username) {
         try (Session session = sessionFactory.openSession()) {
-            return todoRepository.findAll(session)
+            return taskRepository.findAll(session, username)
                     .stream()
-                    .map(todoMapper::toDto)
+                    .map(taskMapper::toDto)
                     .toList();
         }
     }
 
-    public void saveTodo(TodoDTO todoDTO) {
+    public void saveTask(TaskDTO taskDTO, String username) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            Todo todo = todoMapper.toEntity(todoDTO);
-            todoRepository.save(todo, session);
+            Task task = taskMapper.toEntity(taskDTO);
+            task.setUser(userService.findByUsername(username));
+            taskRepository.save(task, session);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -48,12 +50,12 @@ public class TodoService {
         }
     }
 
-    public void deleteTodo(TodoDTO todoDTO) {
+    public void deleteTask(TaskDTO taskDTO) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            Todo todo = todoMapper.toEntity(todoDTO);
-            todoRepository.delete(todo, session);
+            Task task = taskMapper.toEntity(taskDTO);
+            taskRepository.delete(task, session);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -62,11 +64,11 @@ public class TodoService {
         }
     }
 
-    public void deleteTodoById(Long id) {
+    public void deleteTaskById(Long id) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            todoRepository.deleteById(id, session);
+            taskRepository.deleteById(id, session);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -75,12 +77,13 @@ public class TodoService {
         }
     }
 
-    public void updateTodo(TodoDTO todoDTO) {
+    public void updateTask(TaskDTO taskDTO, String username) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            Todo todo = todoMapper.toEntity(todoDTO);
-            todoRepository.update(todo, session);
+            Task task = taskMapper.toEntity(taskDTO);
+            task.setUser(userService.findByUsername(username));
+            taskRepository.update(task, session);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {

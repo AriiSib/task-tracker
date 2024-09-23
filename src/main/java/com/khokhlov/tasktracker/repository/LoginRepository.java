@@ -7,8 +7,8 @@ import org.hibernate.query.Query;
 public class LoginRepository {
 
     public boolean validateUser(Login login, Session session) {
-        String hql = "FROM User WHERE username = :username and password = :password";
-        Query query = session.createQuery(hql);
+        String hql = "SELECT username FROM User WHERE username = :username and password = :password";
+        Query<String> query = session.createQuery(hql, String.class);
         query.setParameter("username", login.getUsername());
         query.setParameter("password", login.getPassword());
 

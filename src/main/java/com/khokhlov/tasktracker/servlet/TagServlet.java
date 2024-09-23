@@ -13,8 +13,8 @@ import jakarta.servlet.annotation.*;
 import static com.khokhlov.tasktracker.consts.Consts.*;
 
 
-@WebServlet(name = "tagApiServlet", value = "/api/tags")
-public class TagApiServlet extends HttpServlet implements Servlet {
+@WebServlet(name = "tagServlet", value = "/api/tags")
+public class TagServlet extends HttpServlet implements Servlet {
     private TagService tagService;
     private ObjectMapper objectMapper;
 

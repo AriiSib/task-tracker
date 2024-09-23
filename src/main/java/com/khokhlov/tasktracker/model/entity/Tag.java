@@ -5,20 +5,18 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "tasks")
 @RequiredArgsConstructor
 @Entity
 @Table(name = "tags")
 public class Tag {
 
     @Id
-    @SequenceGenerator(name = "tag_seq",
-            sequenceName = "tags_seq",
-            initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name")
@@ -26,6 +24,9 @@ public class Tag {
 
     @Column(name = "color")
     private String color;
+
+    @ManyToMany(mappedBy = "tags")
+    private Set<Task> tasks;
 
     @Override
     public final boolean equals(Object o) {

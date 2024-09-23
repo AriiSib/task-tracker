@@ -17,13 +17,13 @@
     <nav class="navbar navbar-expand-md navbar-dark"
          style="background-color: tomato">
         <div>
-            <a href="https://www.javaguides.net" class="navbar-brand"> Todo
+            <a href="https://github.com/AriiSib/task-tracker" class="navbar-brand"> Task-tracker
                 App</a>
         </div>
 
         <ul class="navbar-nav">
             <li><a href="<%=request.getContextPath()%>/list"
-                   class="nav-link">Todos</a></li>
+                   class="nav-link">Tasks</a></li>
         </ul>
 
         <ul class="navbar-nav navbar-collapse justify-content-end">
@@ -35,42 +35,42 @@
 <div class="container col-md-5">
     <div class="card">
         <div class="card-body">
-            <c:if test="${todo != null}">
+            <c:if test="${task != null}">
             <form action="update" method="post">
                 </c:if>
-                <c:if test="${todo == null}">
+                <c:if test="${task == null}">
                 <form action="save" method="post">
                     </c:if>
 
                     <caption>
                         <h2>
-                            <c:if test="${todo != null}">
-                                Edit Todo
+                            <c:if test="${task != null}">
+                                Edit Task
                             </c:if>
-                            <c:if test="${todo == null}">
-                                Add New Todo
+                            <c:if test="${task == null}">
+                                Add New Task
                             </c:if>
                         </h2>
                     </caption>
 
-                    <c:if test="${todo != null}">
-                        <input type="hidden" name="id" value="<c:out value='${todo.id}' />" />
+                    <c:if test="${task != null}">
+                        <input type="hidden" name="id" value="<c:out value='${task.id}' />" />
                     </c:if>
 
                     <fieldset class="form-group">
-                        <label>Todo Title</label> <input type="text"
-                                                         value="<c:out value='${todo.title}' />" class="form-control"
+                        <label>Task Title</label> <input type="text"
+                                                         value="<c:out value='${task.title}' />" class="form-control"
                                                          name="title" required="required" minlength="5">
                     </fieldset>
 
                     <fieldset class="form-group">
-                        <label>Todo Description</label> <input type="text"
-                                                              value="<c:out value='${todo.description}' />" class="form-control"
+                        <label>Task Description</label> <input type="text"
+                                                              value="<c:out value='${task.description}' />" class="form-control"
                                                               name="description" minlength="5">
                     </fieldset>
 
                     <fieldset class="form-group">
-                        <label>Todo Status</label> <select class="form-control"
+                        <label>Task Status</label> <select class="form-control"
                                                            name="isDone">
                         <option value="false">In Progress</option>
                         <option value="true">Complete</option>
@@ -78,8 +78,8 @@
                     </fieldset>
 
                     <fieldset class="form-group">
-                        <label>Todo Target Date</label> <input type="date"
-                                                               value="<c:out value='${todo.targetDate}' />" class="form-control"
+                        <label>Task Target Date</label> <input type="date"
+                                                               value="<c:out value='${task.targetDate}' />" class="form-control"
                                                                name="targetDate" required="required">
                     </fieldset>
 
