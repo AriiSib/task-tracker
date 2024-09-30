@@ -1,53 +1,44 @@
 package com.khokhlov.tasktracker.service;
 
+import com.khokhlov.tasktracker.exception.InvalidLoginOrPassword;
+import com.khokhlov.tasktracker.exception.UserAlreadyExistsException;
 import com.khokhlov.tasktracker.mapper.UserMapper;
+import com.khokhlov.tasktracker.model.command.LoginCommand;
+import com.khokhlov.tasktracker.model.command.UserCommand;
 import com.khokhlov.tasktracker.model.dto.UserDTO;
 import com.khokhlov.tasktracker.model.entity.User;
 import com.khokhlov.tasktracker.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.exception.DataException;
 
-import java.util.List;
 
-@RequiredArgsConstructor
-public class UserService {
-    private final SessionFactory sessionFactory;
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
+public class UserService extends AbstractService<User, UserCommand, UserDTO, UserRepository> {
 
-    public List<UserDTO> getAllUsers() {
-        try (Session session = sessionFactory.openSession()) {
-            return userRepository.findAll(session)
-                    .stream()
-                    .map(userMapper::toDTO)
-                    .toList();
-        }
+    public UserService(SessionFactory sessionFactory, UserRepository userRepository, UserMapper userMapper) {
+        super(userMapper, userRepository, sessionFactory);
     }
 
-    public User findByUsername(String username) {
-        try (Session session = sessionFactory.openSession()) {
-            return userRepository.findByUsername(username, session).orElseThrow(
-                    () -> new RuntimeException("User not found"));
-        }
-    }
-
-    public void registerUser(UserDTO userDTO) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-            User user = userMapper.toEntity(userDTO);
-            userRepository.save(user, session);
-            transaction.commit();
-        } catch (DataException e) {
-            System.err.println("Username too long!");
-        } catch (HibernateException e) {
-            if (transaction != null) {
-                transaction.rollback();
+    public User authenticate(LoginCommand login) {
+        User validUser = null;
+        try (Session session = getSessionFactory().openSession()) {
+            validUser = getRepository().authentication(login, session);
+            if (validUser == null) {
+                throw new InvalidLoginOrPassword("Invalid login or password");
             }
         }
+        return validUser;
+    }
+
+    @Override
+    public UserDTO save(UserCommand userCommand) {
+        try (Session session = getSessionFactory().openSession()) {
+            var existingUser = getRepository().findByUsername(userCommand.getUsername(), session);
+            if (existingUser.isPresent()) {
+                throw new UserAlreadyExistsException("That username already taken");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return super.save(userCommand);
     }
 }

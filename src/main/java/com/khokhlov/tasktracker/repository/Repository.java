@@ -1,19 +1,42 @@
 package com.khokhlov.tasktracker.repository;
 
+import org.hibernate.Session;
+
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 
-public interface Repository<T, ID extends Serializable> {
-    Optional<T> findById(ID id);
+public interface Repository<E, ID extends Serializable> {
 
-    List<T> findAll();
+    default Optional<E> findById(ID id, Session session) {
+        return Optional.ofNullable(session.get(getEntityClass(), id));
+    }
 
-    void save(T t);
+    @SuppressWarnings("unchecked")
+    default Class<E> getEntityClass() {
+        return (Class<E>) ((ParameterizedType) getClass().getGenericInterfaces()[0])
+                .getActualTypeArguments()[0];
+    }
 
-    void delete(T t);
+    default List<E> findAll(Session session) {
+        Class<E> entityType = getEntityClass();
+        return session.createQuery("from " + entityType.getSimpleName(), entityType).list();
+    }
 
-    void deleteById(ID id);
+    default void save(E e, Session session) {
+        session.persist(e);
+    }
 
-    T update(T t);
+    default void delete(E e, Session session) {
+        session.remove(e);
+    }
+
+    default void deleteById(ID id, Session session) {
+        session.remove(findById(id, session).orElseThrow());
+    }
+
+    default E update(E e, Session session) {
+        return session.merge(e);
+    }
 }

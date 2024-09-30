@@ -1,6 +1,8 @@
 package com.khokhlov.tasktracker.servlet;
 
-import com.khokhlov.tasktracker.model.dto.UserDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.khokhlov.tasktracker.exception.UserAlreadyExistsException;
+import com.khokhlov.tasktracker.model.command.UserCommand;
 import com.khokhlov.tasktracker.service.UserService;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
@@ -16,13 +18,15 @@ import static com.khokhlov.tasktracker.consts.Consts.*;
 
 @WebServlet(name = "registerServlet", value = "/register")
 public class RegisterServlet extends HttpServlet implements Servlet {
-    private UserService userService;
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private transient UserService userService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         ServletContext context = config.getServletContext();
         userService = (UserService) context.getAttribute(USER_SERVICE);
+        objectMapper = (ObjectMapper) context.getAttribute(OBJECT_MAPPER);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -30,22 +34,23 @@ public class RegisterServlet extends HttpServlet implements Servlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         register(req, resp);
     }
 
-    private void register(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String firstName = req.getParameter("firstName");
-        String lastName = req.getParameter("lastName");
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
+    private void register(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        try {
+            UserCommand userCommand = getObjectFromBody(objectMapper, req, UserCommand.class);
+            userService.save(userCommand);
 
-        UserDTO userDTO = new UserDTO(firstName, lastName, username, password);
+            req.getSession().setAttribute("NOTIFICATION", "REGISTRATION WAS SUCCESSFUL");
+            resp.setStatus(HttpServletResponse.SC_CREATED);
 
-        userService.registerUser(userDTO);
-        resp.setStatus(HttpServletResponse.SC_CREATED);
-
-//        req.getRequestDispatcher("/login.jsp").forward(req, resp);
-        resp.sendRedirect(req.getContextPath() +"/login");
+            resp.sendRedirect(req.getContextPath() + "/login");
+        } catch (UserAlreadyExistsException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
+        }
     }
 }

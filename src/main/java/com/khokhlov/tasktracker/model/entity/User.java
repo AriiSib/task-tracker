@@ -1,11 +1,13 @@
 package com.khokhlov.tasktracker.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements com.khokhlov.tasktracker.model.entity.Entity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +32,7 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = false, unique = true, length = 10) //Исправить длину
+    @Column(nullable = false, unique = true, length = 20)
     private String username;
 
     @Column(nullable = false)

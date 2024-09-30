@@ -1,7 +1,10 @@
 package com.khokhlov.tasktracker.servlet;
 
-import com.khokhlov.tasktracker.model.entity.Login;
-import com.khokhlov.tasktracker.service.LoginService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.khokhlov.tasktracker.exception.InvalidLoginOrPassword;
+import com.khokhlov.tasktracker.model.command.LoginCommand;
+import com.khokhlov.tasktracker.model.entity.User;
+import com.khokhlov.tasktracker.service.UserService;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -11,19 +14,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Map;
 
-import static com.khokhlov.tasktracker.consts.Consts.LOGIN_SERVICE;
+import static com.khokhlov.tasktracker.consts.Consts.*;
 
 @WebServlet(name = "loginServlet", value = "/login")
-public class LoginServlet extends HttpServlet {
-    private LoginService loginService;
+public class LoginServlet extends HttpServlet implements Servlet {
+    private ObjectMapper objectMapper;
+    private transient UserService userService;
 
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         ServletContext context = config.getServletContext();
-        loginService = (LoginService) context.getAttribute(LOGIN_SERVICE);
+        userService = (UserService) context.getAttribute(USER_SERVICE);
+        objectMapper = (ObjectMapper) context.getAttribute(OBJECT_MAPPER);
     }
 
     @Override
@@ -32,27 +38,29 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         authenticate(req, resp);
     }
 
-    private void authenticate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
-        Login login = new Login();
-        login.setUsername(username);
-        login.setPassword(password);
+    private void authenticate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        var loginCommand = getObjectFromBody(objectMapper, req, LoginCommand.class);
 
         try {
-            if (loginService.validate(login)) {
-                req.getSession().setAttribute("username", username);
-                resp.sendRedirect(req.getContextPath() + "/list");
-            } else {
-                req.setAttribute("errorMessage", "Invalid username or password");
-                req.getRequestDispatcher(req.getContextPath() + "login.jsp").forward(req, resp);
-            }
+            User user = userService.authenticate(loginCommand);
+            req.getSession().setAttribute("user", user);
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+            resp.sendRedirect(req.getRequestURI() + "/log");
+        } catch (InvalidLoginOrPassword e) {
+            sendErrorMessage(resp, e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            sendErrorMessage(resp, "An unexpected error occurred.");
         }
+    }
+
+    private void sendErrorMessage(HttpServletResponse resp, String errorMessage) throws IOException {
+        resp.setContentType("application/json");
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        resp.getWriter().write("{\"errorMessage\": \"" + errorMessage + "\"}");
     }
 }

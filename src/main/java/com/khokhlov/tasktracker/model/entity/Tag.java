@@ -1,9 +1,11 @@
 package com.khokhlov.tasktracker.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
@@ -13,7 +15,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "tags")
-public class Tag {
+public class Tag implements com.khokhlov.tasktracker.model.entity.Entity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +27,8 @@ public class Tag {
     @Column(name = "color")
     private String color;
 
-    @ManyToMany(mappedBy = "tags")
-    private Set<Task> tasks;
+//    @ManyToMany(mappedBy = "tags")
+//    private Set<Task> tasks;
 
     @Override
     public final boolean equals(Object o) {

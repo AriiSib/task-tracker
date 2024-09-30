@@ -1,6 +1,9 @@
 package com.khokhlov.tasktracker.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.khokhlov.tasktracker.model.command.TaskCommand;
 import com.khokhlov.tasktracker.model.dto.TaskDTO;
+import com.khokhlov.tasktracker.model.entity.User;
 import com.khokhlov.tasktracker.service.TaskService;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
@@ -11,16 +14,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
 import java.util.List;
 
+import static com.khokhlov.tasktracker.consts.Consts.OBJECT_MAPPER;
 import static com.khokhlov.tasktracker.consts.Consts.TASK_SERVICE;
 
 @WebServlet(name = "taskServlet", value = "/")
-public class TaskServlet extends HttpServlet {
-    private TaskService taskService;
+public class TaskServlet extends HttpServlet implements Servlet {
+    private ObjectMapper objectMapper;
+    private transient TaskService taskService;
+    private User user;
 
 
     @Override
@@ -28,31 +31,23 @@ public class TaskServlet extends HttpServlet {
         super.init(config);
         ServletContext context = config.getServletContext();
         taskService = (TaskService) context.getAttribute(TASK_SERVICE);
+        objectMapper = (ObjectMapper) context.getAttribute(OBJECT_MAPPER);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getServletPath();
-
         try {
             switch (action) {
-                case "/new":
-                    showNewForm(req, resp);
-                    break;
-                case "/save":
-                    saveTask(req, resp);
-                    break;
-                case "/delete":
-                    deleteTask(req, resp);
-                    break;
                 case "/edit":
                     showEditForm(req, resp);
                     break;
-                case "/update":
-                    updateTask(req, resp);
-                    break;
                 case "/list":
-                    listTask(req, resp);
+                    showTaskList(req, resp);
+                    break;
+                case "/log":
+                    user = (User) req.getSession().getAttribute("user");
+                    showTaskList(req, resp);
                     break;
                 default:
                     req.getRequestDispatcher(req.getContextPath() + "/login.jsp").forward(req, resp);
@@ -65,13 +60,46 @@ public class TaskServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
+        String action = req.getServletPath();
+        try {
+            switch (action) {
+                case "/new":
+                    showNewForm(req, resp);
+                    break;
+                case "/save":
+                    saveTask(req, resp);
+                    break;
+                default:
+                    resp.sendRedirect(req.getContextPath() + "/list");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            updateTask(req, resp);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        resp.setStatus(HttpServletResponse.SC_OK);
+    }
 
-    private void listTask(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<TaskDTO> listTask = taskService.getAllTask(req.getSession().getAttribute("username").toString());
-        req.setAttribute("listTask", listTask);
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            deleteTask(req, resp);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        resp.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    private void showTaskList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<TaskDTO> taskList = taskService.findAllTasksByUsername(user.getUsername());
+        req.setAttribute("taskList", taskList);
         req.getRequestDispatcher(req.getContextPath() + "/task-list.jsp").forward(req, resp);
     }
 
@@ -87,46 +115,17 @@ public class TaskServlet extends HttpServlet {
     }
 
     private void saveTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String title = req.getParameter("title");
-        String username = req.getSession().getAttribute("username").toString();
-        String description = req.getParameter("description");
-        boolean isDone = Boolean.parseBoolean(req.getParameter("isDone"));
-
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate targetDate = LocalDate.parse(req.getParameter("targetDate"), df);
-
-        TaskDTO newTask = new TaskDTO(null, title, description, targetDate, isDone, new HashSet<>(), new HashSet<>());
-
-        taskService.saveTask(newTask, username);
-
-        resp.sendRedirect(req.getContextPath() + "/list");
+        TaskCommand taskCommand = getObjectFromBody(objectMapper, req, TaskCommand.class);
+        taskService.saveTask(taskCommand, user);
     }
 
     private void updateTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
-
-        String title = req.getParameter("title");
-        String username = req.getSession().getAttribute("username").toString();
-        String description = req.getParameter("description");
-        boolean isDone = Boolean.parseBoolean(req.getParameter("isDone"));
-
-
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate targetDate = LocalDate.parse(req.getParameter("targetDate"), df);
-
-        TaskDTO updateTask = new TaskDTO(id, title, description, targetDate, isDone, new HashSet<>(), new HashSet<>());
-
-        taskService.updateTask(updateTask, username);
-
-        resp.sendRedirect(req.getContextPath() + "/list");
+        TaskCommand taskCommand = getObjectFromBody(objectMapper, req, TaskCommand.class);
+        taskService.update(taskCommand);
     }
 
     private void deleteTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
-        taskService.deleteTaskById(id);
-        resp.sendRedirect(req.getContextPath() + "/list");
+        TaskCommand taskCommand = getObjectFromBody(objectMapper, req, TaskCommand.class);
+        taskService.deleteById(taskCommand.getId());
     }
-
-
-
 }

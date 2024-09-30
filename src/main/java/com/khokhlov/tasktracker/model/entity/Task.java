@@ -1,9 +1,11 @@
 package com.khokhlov.tasktracker.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
@@ -19,7 +21,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "tasks")
-public class Task {
+public class Task implements com.khokhlov.tasktracker.model.entity.Entity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +34,7 @@ public class Task {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "task_tag",
             joinColumns = @JoinColumn(name = "taskId"),
@@ -41,6 +43,7 @@ public class Task {
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 3)
     private Set<Comment> comments;
 
     @Column
@@ -49,8 +52,9 @@ public class Task {
     @Column(name = "target_date")
     private LocalDate targetDate;
 
-    @Column
-    private boolean status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskStatus status;
 
     @CreationTimestamp
     @Column(name = "created", updatable = false)

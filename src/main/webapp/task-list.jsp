@@ -1,82 +1,81 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>User Management Application</title>
-
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-          crossorigin="anonymous">
-</head>
-
+    <title>Task Board</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script>
+        function openTask(taskId) {
+            window.location.href = "edit?id=" + taskId;
+        }
+    </script>
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-md navbar-dark"
-         style="background-color: tomato">
+    <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #2b2b2b;">
         <div>
-            <a href="https://github.com/AriiSib/task-tracker" class="navbar-brand"> Task-tracker
-                App</a>
+            <a href="<%=request.getContextPath()%>/index.jsp" class="navbar-brand"
+               style="font-weight: bold; color: #ffffff;">
+                Task-Tracker App
+            </a>
         </div>
-
-        <ul class="navbar-nav">
-            <li><a href="<%=request.getContextPath()%>/list"
-                   class="nav-link">Tasks</a></li>
-        </ul>
-
-        <ul class="navbar-nav navbar-collapse justify-content-end">
-            <li><a href="<%=request.getContextPath()%>/logout"
-                   class="nav-link">Logout</a></li>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <a href="<%=request.getContextPath()%>/logout" class="nav-link" style="color: #ffffff;">
+                    Logout
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
 
-<div class="row">
-    <!-- <div class="alert alert-success" *ngIf='message'>{{message}}</div> -->
-
-    <div class="container">
-        <h3 class="text-center">List of Tasks</h3>
-        <hr>
-        <div class="container text-left">
-
-            <a href="<%=request.getContextPath()%>/new"
-               class="btn btn-success">Add Task</a>
-        </div>
-        <br>
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th>Target Date</th>
-                <th>Task Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!--   for (Task task: tasks) {  -->
-            <c:forEach var="task" items="${listTask}">
-
-                <tr>
-                    <td><c:out value="${task.title}" /></td>
-                    <td><c:out value="${task.targetDate}" /></td>
-                    <td><c:out value="${task.status}" /></td>
-
-                    <td><a href="edit?id=<c:out value='${task.id}' />">Edit</a>
-                        &nbsp;&nbsp;&nbsp;&nbsp; <a
-                                href="delete?id=<c:out value='${task.id}' />">Delete</a></td>
-
-                    <!--  <td><button (click)="updateTodo(task.id)" class="btn btn-success">Update</button>
-                              <button (click)="deleteTodo(task.id)" class="btn btn-warning">Delete</button></td> -->
-                </tr>
+<div class="container">
+    <h3 class="text-center">Task Board</h3>
+    <div class="kanban-board">
+        <div class="kanban-column">
+            <h4>Not Started</h4>
+            <c:forEach var="task" items="${taskList}">
+                <c:if test="${task.status.getName() eq 'NOT_STARTED'}">
+                    <div class="task-card" onclick="openTask(${task.id})">
+                        <h5><c:out value="${task.title}"/></h5>
+                        <p>Target Date: <c:out value="${task.targetDate}"/></p>
+                    </div>
+                </c:if>
             </c:forEach>
-            <!-- } -->
-            </tbody>
+            <div class="text-center">
+                <form action="<%=request.getContextPath()%>/new" method="POST" style="display: inline-block;">
+                    <button type="submit" class="btn btn-success">Add Task</button>
+                </form>
+            </div>
+        </div>
 
-        </table>
+        <div class="kanban-column">
+            <h4>In Progress</h4>
+            <c:forEach var="task" items="${taskList}">
+                <c:if test="${task.status.getName() eq 'IN_PROGRESS'}">
+                    <div class="task-card" onclick="openTask(${task.id})">
+                        <h5><c:out value="${task.title}"/></h5>
+                        <p>Target Date: <c:out value="${task.targetDate}"/></p>
+                    </div>
+                </c:if>
+            </c:forEach>
+        </div>
+
+        <div class="kanban-column">
+            <h4>Done</h4>
+            <c:forEach var="task" items="${taskList}">
+                <c:if test="${task.status.getName() eq 'DONE'}">
+                    <div class="task-card" onclick="openTask(${task.id})">
+                        <h5><c:out value="${task.title}"/></h5>
+                        <p>Target Date: <c:out value="${task.targetDate}"/></p>
+                    </div>
+                </c:if>
+            </c:forEach>
+        </div>
     </div>
 </div>
 
-<jsp:include page="footer.jsp"></jsp:include>
+<jsp:include page="footer.jsp"/>
 </body>
 </html>

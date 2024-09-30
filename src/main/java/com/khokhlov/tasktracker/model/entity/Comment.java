@@ -1,11 +1,13 @@
 package com.khokhlov.tasktracker.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -15,7 +17,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "comments")
-public class Comment {
+public class Comment implements com.khokhlov.tasktracker.model.entity.Entity, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

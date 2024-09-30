@@ -1,94 +1,79 @@
 package com.khokhlov.tasktracker.service;
 
 import com.khokhlov.tasktracker.mapper.TaskMapper;
+import com.khokhlov.tasktracker.model.command.TaskCommand;
 import com.khokhlov.tasktracker.model.dto.TaskDTO;
 import com.khokhlov.tasktracker.model.entity.Task;
+import com.khokhlov.tasktracker.model.entity.User;
 import com.khokhlov.tasktracker.repository.TaskRepository;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
 
-@RequiredArgsConstructor
-public class TaskService {
-    private final SessionFactory sessionFactory;
-    private final TaskRepository taskRepository;
-    private final UserService userService;
-    private final TaskMapper taskMapper;
 
+public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, TaskRepository> {
 
-    public TaskDTO getTaskById(Long id) {
-        try (Session session = sessionFactory.openSession()) {
-            return taskMapper.toDto(taskRepository.findById(id, session).orElseThrow(
-                    () -> new RuntimeException("Task not found with id: " + id)));
-        }
+    public TaskService(SessionFactory sessionFactory, TaskRepository taskRepository, TaskMapper taskMapper) {
+        super(taskMapper, taskRepository, sessionFactory);
     }
 
-    public List<TaskDTO> getAllTask(String username) {
-        try (Session session = sessionFactory.openSession()) {
-            return taskRepository.findAll(session, username)
+
+    public List<TaskDTO> findAllTasksByUsername(String username) {
+        try (Session session = getSessionFactory().openSession()) {
+            return getRepository().findAllTasksByUsername(session, username)
                     .stream()
-                    .map(taskMapper::toDto)
+                    .map(getMapper()::mapToDTO)
                     .toList();
         }
     }
 
-    public void saveTask(TaskDTO taskDTO, String username) {
+    public TaskDTO saveTask(TaskCommand taskCommand, User user) {
         Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            Task task = taskMapper.toEntity(taskDTO);
-            task.setUser(userService.findByUsername(username));
-            taskRepository.save(task, session);
+
+            Task task = getMapper().mapToEntity(taskCommand);
+            task.setUser(user);
+            getRepository().save(task, session);
             transaction.commit();
+
+            return getMapper().mapToDTO(task);
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
+            return null;
         }
     }
 
-    public void deleteTask(TaskDTO taskDTO) {
+    public TaskDTO update(TaskCommand taskCommand) {
         Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            Task task = taskMapper.toEntity(taskDTO);
-            taskRepository.delete(task, session);
+
+            TaskMapper mapper = (TaskMapper) getMapper();
+
+            Task existingTask = getRepository().findById(taskCommand.getId(), session).orElse(null);
+            mapper.partialUpdate(taskCommand, existingTask);
+            getRepository().update(existingTask, session);
             transaction.commit();
+
+            return mapper.mapToDTO(existingTask);
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
+            return null;
         }
     }
 
-    public void deleteTaskById(Long id) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-            taskRepository.deleteById(id, session);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-        }
-    }
 
-    public void updateTask(TaskDTO taskDTO, String username) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-            Task task = taskMapper.toEntity(taskDTO);
-            task.setUser(userService.findByUsername(username));
-            taskRepository.update(task, session);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
+    public TaskDTO getTaskById(Long id) {
+        try (Session session = getSessionFactory().openSession()) {
+            return getMapper().mapToDTO(getRepository().findById(id, session).orElseThrow(
+                    () -> new RuntimeException("Task not found with id: " + id)));
         }
     }
 }

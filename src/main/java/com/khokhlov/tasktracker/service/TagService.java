@@ -1,26 +1,17 @@
 package com.khokhlov.tasktracker.service;
 
 import com.khokhlov.tasktracker.mapper.TagMapper;
+import com.khokhlov.tasktracker.model.command.TagCommand;
 import com.khokhlov.tasktracker.model.dto.TagDTO;
+import com.khokhlov.tasktracker.model.entity.Tag;
 import com.khokhlov.tasktracker.repository.TagRepository;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import java.util.List;
 
-@RequiredArgsConstructor
-public class TagService {
-    private final SessionFactory sessionFactory;
-    private final TagRepository tagRepository;
-    private final TagMapper tagMapper;
+public class TagService extends AbstractService<Tag, TagCommand, TagDTO, TagRepository> {
 
-    public List<TagDTO> getAllTags() {
-        try (Session session = sessionFactory.openSession()) {
-            return tagRepository.findAll(session)
-                    .stream()
-                    .map(tagMapper::toDTO)
-                    .toList();
-        }
+    public TagService(SessionFactory sessionFactory, TagRepository tagRepository, TagMapper tagMapper) {
+        super(tagMapper, tagRepository, sessionFactory);
     }
+
 }
