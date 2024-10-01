@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface Repository<E, ID extends Serializable> {
 
-    default Optional<E> findById(ID id, Session session) {
+    default Optional<E> findById(Session session, ID id) {
         return Optional.ofNullable(session.get(getEntityClass(), id));
     }
 
@@ -28,12 +28,8 @@ public interface Repository<E, ID extends Serializable> {
         session.persist(e);
     }
 
-    default void delete(E e, Session session) {
-        session.remove(e);
-    }
-
     default void deleteById(ID id, Session session) {
-        session.remove(findById(id, session).orElseThrow());
+        session.remove(findById(session, id).orElseThrow());
     }
 
     default E update(E e, Session session) {

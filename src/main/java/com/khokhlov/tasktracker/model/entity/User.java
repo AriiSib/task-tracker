@@ -12,11 +12,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
-@ToString(exclude = {"tasks", "comments"})
+@ToString(exclude = {"tasks"})
 @RequiredArgsConstructor
 @Entity
 @Table(name = "users")
@@ -40,9 +39,6 @@ public class User implements com.khokhlov.tasktracker.model.entity.Entity, Seria
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Comment> comments;
 
     @CreationTimestamp
     @Column(name = "registered", updatable = false)

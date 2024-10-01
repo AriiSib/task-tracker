@@ -40,6 +40,14 @@
                     <div class="task-card" onclick="openTask(${task.id})">
                         <h5><c:out value="${task.title}"/></h5>
                         <p>Target Date: <c:out value="${task.targetDate}"/></p>
+
+                        <c:if test="${not empty task.tags}">
+                            <p>Tag:
+                                <c:forEach var="tag" items="${task.tags}">
+                                    <span class="badge bg-secondary"><c:out value="${tag.name}"/></span>
+                                </c:forEach>
+                            </p>
+                        </c:if>
                     </div>
                 </c:if>
             </c:forEach>
@@ -57,6 +65,14 @@
                     <div class="task-card" onclick="openTask(${task.id})">
                         <h5><c:out value="${task.title}"/></h5>
                         <p>Target Date: <c:out value="${task.targetDate}"/></p>
+
+                        <c:if test="${not empty task.tags}">
+                            <p>Tags:
+                                <c:forEach var="tag" items="${task.tags}">
+                                    <span class="badge bg-secondary"><c:out value="${tag.name}"/></span>
+                                </c:forEach>
+                            </p>
+                        </c:if>
                     </div>
                 </c:if>
             </c:forEach>
@@ -69,6 +85,14 @@
                     <div class="task-card" onclick="openTask(${task.id})">
                         <h5><c:out value="${task.title}"/></h5>
                         <p>Target Date: <c:out value="${task.targetDate}"/></p>
+
+                        <c:if test="${not empty task.tags}">
+                            <p>Tags:
+                                <c:forEach var="tag" items="${task.tags}">
+                                    <span class="badge bg-secondary"><c:out value="${tag.name}"/></span>
+                                </c:forEach>
+                            </p>
+                        </c:if>
                     </div>
                 </c:if>
             </c:forEach>

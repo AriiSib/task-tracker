@@ -38,7 +38,7 @@ public abstract class AbstractService<E extends Entity, C extends Command, D ext
             if (transaction != null) {
                 transaction.rollback();
             }
-            return null;
+            throw e;
         }
     }
 

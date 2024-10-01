@@ -43,7 +43,7 @@ public class LoginServlet extends HttpServlet implements Servlet {
     }
 
     private void authenticate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        var loginCommand = getObjectFromBody(objectMapper, req, LoginCommand.class);
+        LoginCommand loginCommand = getObjectFromBody(objectMapper, req, LoginCommand.class);
 
         try {
             User user = userService.authenticate(loginCommand);

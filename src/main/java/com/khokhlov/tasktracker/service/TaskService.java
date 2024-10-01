@@ -34,6 +34,14 @@ public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, Tas
         try (Session session = getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
+            if (taskCommand.getTitle().length() > 30) {
+                throw new IllegalArgumentException("Task title length must be less 30");
+            } else if (taskCommand.getDescription().length() > 90) {
+                throw new IllegalArgumentException("Task description length must be less 90 characters");
+            } else if (taskCommand.getTags().isEmpty()) {
+                throw new IllegalArgumentException("Task must contain at least one tag");
+            }
+
             Task task = getMapper().mapToEntity(taskCommand);
             task.setUser(user);
             getRepository().save(task, session);
@@ -41,10 +49,14 @@ public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, Tas
 
             return getMapper().mapToDTO(task);
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
+            try {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+            } catch (Exception rollbackException) {
+                rollbackException.printStackTrace();
             }
-            return null;
+            throw e;
         }
     }
 
@@ -55,7 +67,7 @@ public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, Tas
 
             TaskMapper mapper = (TaskMapper) getMapper();
 
-            Task existingTask = getRepository().findById(taskCommand.getId(), session).orElse(null);
+            Task existingTask = getRepository().findById(session, taskCommand.getId()).orElse(null);
             mapper.partialUpdate(taskCommand, existingTask);
             getRepository().update(existingTask, session);
             transaction.commit();
@@ -72,7 +84,7 @@ public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, Tas
 
     public TaskDTO getTaskById(Long id) {
         try (Session session = getSessionFactory().openSession()) {
-            return getMapper().mapToDTO(getRepository().findById(id, session).orElseThrow(
+            return getMapper().mapToDTO(getRepository().findById(session, id).orElseThrow(
                     () -> new RuntimeException("Task not found with id: " + id)));
         }
     }

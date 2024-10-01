@@ -9,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
+import java.io.IOException;
+
 import static com.khokhlov.tasktracker.consts.Consts.*;
 
 
@@ -26,16 +28,22 @@ public class TagServlet extends HttpServlet implements Servlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
-        sendObjectAsJson(objectMapper, response, tagService.findAll());
+        var tags = tagService.findAll();
+        sendObjectAsJson(objectMapper, response, tags);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        var tagCommand = getObjectFromBody(objectMapper, req, TagCommand.class);
-        var tadDTO = tagService.save(tagCommand);
+        TagCommand tagCommand = getObjectFromBody(objectMapper, req, TagCommand.class);
+        tagService.save(tagCommand);
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
+    }
 
-        sendObjectAsJson(objectMapper, resp, tadDTO); //delete
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Long tagId = Long.parseLong(req.getParameter("id"));
+        tagService.deleteById(tagId);
+        resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 }

@@ -1,7 +1,6 @@
 package com.khokhlov.tasktracker.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.khokhlov.tasktracker.exception.UserAlreadyExistsException;
 import com.khokhlov.tasktracker.model.command.UserCommand;
 import com.khokhlov.tasktracker.service.UserService;
 import jakarta.servlet.ServletConfig;
@@ -47,7 +46,7 @@ public class RegisterServlet extends HttpServlet implements Servlet {
             resp.setStatus(HttpServletResponse.SC_CREATED);
 
             resp.sendRedirect(req.getContextPath() + "/login");
-        } catch (UserAlreadyExistsException e) {
+        } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.setContentType("application/json");
             resp.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");

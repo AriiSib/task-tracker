@@ -8,47 +8,6 @@
     <title>Register page</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <%--    <style>--%>
-    <%--        body {--%>
-    <%--            background: linear-gradient(135deg, #1f1f1f, #2b2b2b);--%>
-    <%--            color: #ffffff;--%>
-    <%--        }--%>
-
-    <%--        .container {--%>
-    <%--            margin-top: 50px;--%>
-    <%--            background-color: rgba(46, 46, 46, 0.95);--%>
-    <%--            padding: 30px;--%>
-    <%--            border-radius: 5px;--%>
-    <%--        }--%>
-
-    <%--        h2 {--%>
-    <%--            color: #ffffff;--%>
-    <%--            margin-bottom: 30px;--%>
-    <%--        }--%>
-
-    <%--        .alert {--%>
-    <%--            margin-bottom: 20px;--%>
-    <%--            max-width: 400px;--%>
-    <%--            word-wrap: break-word;--%>
-    <%--        }--%>
-
-    <%--        .form-group {--%>
-    <%--            margin-bottom: 20px;--%>
-    <%--        }--%>
-
-    <%--        .form-control {--%>
-    <%--            max-width: 400px;--%>
-    <%--        }--%>
-
-    <%--        .btn-primary {--%>
-    <%--            background-color: rgba(0, 123, 255, 0.8);--%>
-    <%--            border-color: rgba(0, 123, 255, 0.8);--%>
-    <%--        }--%>
-
-    <%--        .btn-primary:hover {--%>
-    <%--            background-color: rgba(0, 123, 255, 1);--%>
-    <%--        }--%>
-    <%--    </style>--%>
 </head>
 
 <body>

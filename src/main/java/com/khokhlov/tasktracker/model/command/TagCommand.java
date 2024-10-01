@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 @Getter
 public class TagCommand implements Command {
     private String name;
-    private String color;
 }

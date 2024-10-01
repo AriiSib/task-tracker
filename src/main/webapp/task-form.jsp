@@ -26,10 +26,56 @@
                 .catch(error => {
                     alert("An error occurred: " + error.message);
                 });
-
         }
     </script>
 
+    <script>
+        let tags = [];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            <c:if test="${task.tags != null}">
+            tags = ${task.tags};
+            updateTagList();
+            </c:if>
+        });
+
+        function updateTagList() {
+            const tagList = document.getElementById('tagList');
+            tagList.innerHTML = '';
+
+            tags.forEach((tag, index) => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'badge bg-primary me-2';
+                tagElement.textContent = tag;
+
+                const removeButton = document.createElement('button');
+                removeButton.className = 'btn btn-sm btn-danger ms-2';
+                removeButton.textContent = 'x';
+                removeButton.onclick = function () {
+                    tags.splice(index, 1);
+                    updateTagList();
+                };
+
+                tagElement.appendChild(removeButton);
+                tagList.appendChild(tagElement);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const tagInput = document.getElementById('tagInput');
+            tagInput.addEventListener('keypress', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const tag = event.target.value.trim();
+                    if (tag && !tags.includes(tag)) {
+                        tags.push(tag);
+                        updateTagList();
+                        event.target.value = '';
+                    }
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 <header>
@@ -45,6 +91,9 @@
 
 <div class="container mt-5">
     <h3 class="text-center">Task Form</h3>
+
+    <div id="errorMessages" class="alert alert-danger d-none"></div>
+
     <form id="taskForm" onsubmit="return false;">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
@@ -77,6 +126,12 @@
             </select>
         </div>
 
+        <div class="mb-3">
+            <label for="tags" class="form-label">Tags</label>
+            <input type="text" id="tagInput" class="form-control" placeholder="Add a tag and press Enter">
+            <div id="tagList" class="mt-2"></div>
+        </div>
+
         <input type="hidden" name="id" id="taskId" value="${task.id != null ? task.id : ''}"/>
 
         <button type="button" class="btn btn-primary" id="saveTaskButton">
@@ -102,11 +157,12 @@
             title: document.getElementById('title').value,
             description: document.getElementById('description').value,
             targetDate: document.getElementById('targetDate').value,
-            status: document.getElementById('status').value
+            status: document.getElementById('status').value,
+            tags: tags
         };
 
         const method = isUpdating ? 'PUT' : 'POST';
-        const url = isUpdating ? '' : '<%=request.getContextPath()%>/save';
+        const url = isUpdating ? '<%=request.getContextPath()%>/update' : '<%=request.getContextPath()%>/save';
 
         fetch(url, {
             method: method,
@@ -120,15 +176,14 @@
                     window.location.href = '<%=request.getContextPath()%>/list';
                 } else {
                     return response.json().then(err => {
-                        throw new Error(err.errorMessage || 'Unknown error');
+                        throw new Error(err.error || 'Unknown error');
                     });
                 }
             })
             .catch(error => {
-                const errorMessage = document.createElement('div');
-                errorMessage.className = 'alert alert-danger mt-3';
-                errorMessage.textContent = error.message;
-                document.querySelector('.container').appendChild(errorMessage);
+                const errorMessages = document.getElementById('errorMessages');
+                errorMessages.textContent = error.message;
+                errorMessages.classList.remove('d-none');
             });
     });
 </script>

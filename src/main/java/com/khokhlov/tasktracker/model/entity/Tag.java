@@ -1,5 +1,6 @@
 package com.khokhlov.tasktracker.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString(exclude = "tasks")
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "tags")
 public class Tag implements com.khokhlov.tasktracker.model.entity.Entity, Serializable {
@@ -24,11 +25,13 @@ public class Tag implements com.khokhlov.tasktracker.model.entity.Entity, Serial
     @Column(name = "name")
     private String name;
 
-    @Column(name = "color")
-    private String color;
+    @JsonIgnore
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.EAGER)
+    private Set<Task> tasks;
 
-//    @ManyToMany(mappedBy = "tags")
-//    private Set<Task> tasks;
+    public Tag(String name) {
+        this.name = name;
+    }
 
     @Override
     public final boolean equals(Object o) {

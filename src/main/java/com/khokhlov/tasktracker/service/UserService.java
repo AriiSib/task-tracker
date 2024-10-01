@@ -1,6 +1,8 @@
 package com.khokhlov.tasktracker.service;
 
 import com.khokhlov.tasktracker.exception.InvalidLoginOrPassword;
+import com.khokhlov.tasktracker.exception.InvalidPassword;
+import com.khokhlov.tasktracker.exception.InvalidUsername;
 import com.khokhlov.tasktracker.exception.UserAlreadyExistsException;
 import com.khokhlov.tasktracker.mapper.UserMapper;
 import com.khokhlov.tasktracker.model.command.LoginCommand;
@@ -32,12 +34,16 @@ public class UserService extends AbstractService<User, UserCommand, UserDTO, Use
     @Override
     public UserDTO save(UserCommand userCommand) {
         try (Session session = getSessionFactory().openSession()) {
+            if (userCommand.getUsername().length() > 20) {
+                throw new InvalidUsername("Username too long");
+            } else if (userCommand.getPassword().length() > 16) {
+                throw new InvalidPassword("Password length must be less than 16");
+            }
+
             var existingUser = getRepository().findByUsername(userCommand.getUsername(), session);
             if (existingUser.isPresent()) {
                 throw new UserAlreadyExistsException("That username already taken");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return super.save(userCommand);
     }

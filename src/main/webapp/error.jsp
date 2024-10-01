@@ -7,9 +7,9 @@
     <title>Error</title>
 </head>
 <body>
-<center>
+<div style="text-align: center;">
     <h1>Error</h1>
     <h2><%=exception.getMessage() %><br/></h2>
-</center>
+</div>
 </body>
 </html>

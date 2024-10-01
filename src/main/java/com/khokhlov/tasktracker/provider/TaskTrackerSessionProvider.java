@@ -1,6 +1,5 @@
 package com.khokhlov.tasktracker.provider;
 
-import com.khokhlov.tasktracker.model.entity.Comment;
 import com.khokhlov.tasktracker.model.entity.Tag;
 import com.khokhlov.tasktracker.model.entity.Task;
 import com.khokhlov.tasktracker.model.entity.User;
@@ -26,11 +25,9 @@ public class TaskTrackerSessionProvider implements SessionProvider {
 
         return new Configuration()
                 .addProperties(hibernateProperties)
-//                .addPackage("com/khokhlov/tasktracker/model/entity")
                 .addAnnotatedClass(User.class)
                 .addAnnotatedClass(Tag.class)
                 .addAnnotatedClass(Task.class)
-                .addAnnotatedClass(Comment.class)
                 .buildSessionFactory();
     }
 }

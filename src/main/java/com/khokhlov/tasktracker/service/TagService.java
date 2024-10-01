@@ -13,5 +13,4 @@ public class TagService extends AbstractService<Tag, TagCommand, TagDTO, TagRepo
     public TagService(SessionFactory sessionFactory, TagRepository tagRepository, TagMapper tagMapper) {
         super(tagMapper, tagRepository, sessionFactory);
     }
-
 }

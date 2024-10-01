@@ -11,5 +11,4 @@ import java.io.Serializable;
 public class TagDTO implements Serializable, DTO {
     Long id;
     String name;
-    String color;
 }

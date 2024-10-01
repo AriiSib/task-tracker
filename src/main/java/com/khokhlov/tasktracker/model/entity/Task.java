@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -16,12 +17,12 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString(exclude = {"tags", "comments"})
+@ToString(exclude = {"tags"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "tasks")
-public class Task implements com.khokhlov.tasktracker.model.entity.Entity {
+public class Task implements com.khokhlov.tasktracker.model.entity.Entity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +35,7 @@ public class Task implements com.khokhlov.tasktracker.model.entity.Entity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "task_tag",
             joinColumns = @JoinColumn(name = "taskId"),
@@ -42,9 +43,6 @@ public class Task implements com.khokhlov.tasktracker.model.entity.Entity {
     )
     private Set<Tag> tags;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    @BatchSize(size = 3)
-    private Set<Comment> comments;
 
     @Column
     private String description;

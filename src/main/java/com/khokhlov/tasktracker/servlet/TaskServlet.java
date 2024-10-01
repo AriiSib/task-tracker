@@ -23,7 +23,6 @@ import static com.khokhlov.tasktracker.consts.Consts.TASK_SERVICE;
 public class TaskServlet extends HttpServlet implements Servlet {
     private ObjectMapper objectMapper;
     private transient TaskService taskService;
-    private User user;
 
 
     @Override
@@ -46,7 +45,6 @@ public class TaskServlet extends HttpServlet implements Servlet {
                     showTaskList(req, resp);
                     break;
                 case "/log":
-                    user = (User) req.getSession().getAttribute("user");
                     showTaskList(req, resp);
                     break;
                 default:
@@ -98,6 +96,7 @@ public class TaskServlet extends HttpServlet implements Servlet {
     }
 
     private void showTaskList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        User user = (User) req.getSession().getAttribute("user");
         List<TaskDTO> taskList = taskService.findAllTasksByUsername(user.getUsername());
         req.setAttribute("taskList", taskList);
         req.getRequestDispatcher(req.getContextPath() + "/task-list.jsp").forward(req, resp);
@@ -115,8 +114,15 @@ public class TaskServlet extends HttpServlet implements Servlet {
     }
 
     private void saveTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User user = (User) req.getSession().getAttribute("user");
         TaskCommand taskCommand = getObjectFromBody(objectMapper, req, TaskCommand.class);
-        taskService.saveTask(taskCommand, user);
+        try {
+            taskService.saveTask(taskCommand, user);
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
+        }
     }
 
     private void updateTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
