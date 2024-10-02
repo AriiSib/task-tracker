@@ -1,13 +1,19 @@
 package com.khokhlov.tasktracker.servlet;
 
+import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.khokhlov.tasktracker.exception.CriticalError;
+import com.khokhlov.tasktracker.exception.GetObjectFromJsonException;
+import com.khokhlov.tasktracker.exception.SendJsonException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
 public interface Servlet {
+    Logger log = (Logger) LoggerFactory.getLogger(Servlet.class);
 
     default void sendObjectAsJson(ObjectMapper objectMapper, HttpServletResponse response, Object object) {
         try {
@@ -16,7 +22,8 @@ public interface Servlet {
             out.print(objectMapper.writeValueAsString(object));
             out.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw new SendJsonException("Failed to send json: " + e.getMessage());
         }
     }
 
@@ -24,8 +31,19 @@ public interface Servlet {
         try {
             return objectMapper.readValue(req.getInputStream(), valueType);
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            log.error(e.getMessage(), e);
+            throw new GetObjectFromJsonException("Failed to create object from json: " + e.getMessage());
+        }
+    }
+
+    default void sendErrorMessage(HttpServletResponse resp, String errorMessage) {
+        try {
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"error\": \"" + errorMessage + "\"}");
+        } catch (IOException ex) {
+            log.error("Critical error! Failed to send error message: {}", ex.getMessage(), ex);
+
+            throw new CriticalError("A critical error occurred during program execution!");
         }
     }
 }

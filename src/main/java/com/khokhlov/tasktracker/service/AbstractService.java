@@ -42,7 +42,7 @@ public abstract class AbstractService<E extends Entity, C extends Command, D ext
         }
     }
 
-    public boolean deleteById(Long id) {
+    public void deleteById(Long id) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -50,12 +50,11 @@ public abstract class AbstractService<E extends Entity, C extends Command, D ext
             repository.deleteById(id, session);
             transaction.commit();
 
-            return true;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
-            return false;
+            throw e;
         }
     }
 
@@ -74,7 +73,7 @@ public abstract class AbstractService<E extends Entity, C extends Command, D ext
             if (transaction != null) {
                 transaction.rollback();
             }
-            return null;
+            throw e;
         }
     }
 }

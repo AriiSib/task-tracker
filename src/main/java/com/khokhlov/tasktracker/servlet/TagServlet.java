@@ -8,12 +8,11 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-
-import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 
 import static com.khokhlov.tasktracker.consts.Consts.*;
 
-
+@Slf4j
 @WebServlet(name = "tagServlet", value = "/tags")
 public class TagServlet extends HttpServlet implements Servlet {
     private ObjectMapper objectMapper;
@@ -25,8 +24,10 @@ public class TagServlet extends HttpServlet implements Servlet {
         ServletContext context = config.getServletContext();
         tagService = (TagService) context.getAttribute(TAG_SERVICE);
         objectMapper = (ObjectMapper) context.getAttribute(OBJECT_MAPPER);
+        log.debug("TagServlet initialized");
     }
 
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
         var tags = tagService.findAll();
         sendObjectAsJson(objectMapper, response, tags);
@@ -41,8 +42,16 @@ public class TagServlet extends HttpServlet implements Servlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Long tagId = Long.parseLong(req.getParameter("id"));
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
+        Long tagId = null;
+        try {
+            tagId = Long.parseLong(req.getParameter("id"));
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            sendErrorMessage(resp, e.getMessage());
+        }
+
         tagService.deleteById(tagId);
         resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }

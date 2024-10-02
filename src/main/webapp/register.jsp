@@ -24,6 +24,8 @@
     </c:if>
 
     <form id="registerForm">
+        <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
+
         <div class="form-group">
             <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName" required>
         </div>
@@ -32,7 +34,6 @@
             <input type="text" class="form-control" id="lastName" placeholder="Last Name" name="lastName" required>
         </div>
 
-        <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
         <div class="form-group">
             <input type="text" class="form-control" id="username" placeholder="User Name" name="username" required>
         </div>

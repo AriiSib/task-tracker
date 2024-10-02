@@ -13,8 +13,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.util.Map;
 
 import static com.khokhlov.tasktracker.consts.Consts.*;
 
@@ -30,19 +28,24 @@ public class LoginServlet extends HttpServlet implements Servlet {
         ServletContext context = config.getServletContext();
         userService = (UserService) context.getAttribute(USER_SERVICE);
         objectMapper = (ObjectMapper) context.getAttribute(OBJECT_MAPPER);
+        log.debug("LoginServlet initialized");
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("login.jsp").forward(req, resp);
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            req.getRequestDispatcher("login.jsp").forward(req, resp);
+        } catch (Exception e) {
+            log.error("An error occurred while processing /login.jsp: {}", e.getMessage(), e);
+        }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         authenticate(req, resp);
     }
 
-    private void authenticate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void authenticate(HttpServletRequest req, HttpServletResponse resp) {
         LoginCommand loginCommand = getObjectFromBody(objectMapper, req, LoginCommand.class);
 
         try {
@@ -50,17 +53,10 @@ public class LoginServlet extends HttpServlet implements Servlet {
             req.getSession().setAttribute("user", user);
             resp.setStatus(HttpServletResponse.SC_OK);
 
-            resp.sendRedirect(req.getRequestURI() + "/log");
-        } catch (InvalidLoginOrPassword e) {
-            sendErrorMessage(resp, e.getMessage());
+            resp.sendRedirect(req.getRequestURI() + "/list");
         } catch (Exception e) {
-            sendErrorMessage(resp, "An unexpected error occurred.");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            sendErrorMessage(resp, e.getMessage());
         }
-    }
-
-    private void sendErrorMessage(HttpServletResponse resp, String errorMessage) throws IOException {
-        resp.setContentType("application/json");
-        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        resp.getWriter().write("{\"errorMessage\": \"" + errorMessage + "\"}");
     }
 }

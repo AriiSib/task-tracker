@@ -12,6 +12,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 import static com.khokhlov.tasktracker.consts.Consts.OBJECT_MAPPER;
 import static com.khokhlov.tasktracker.consts.Consts.TASK_SERVICE;
 
+@Slf4j
 @WebServlet(name = "taskServlet", value = "/")
 public class TaskServlet extends HttpServlet implements Servlet {
     private ObjectMapper objectMapper;
@@ -31,10 +33,11 @@ public class TaskServlet extends HttpServlet implements Servlet {
         ServletContext context = config.getServletContext();
         taskService = (TaskService) context.getAttribute(TASK_SERVICE);
         objectMapper = (ObjectMapper) context.getAttribute(OBJECT_MAPPER);
+        log.debug("TaskServlet initialized");
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String action = req.getServletPath();
         try {
             switch (action) {
@@ -44,20 +47,18 @@ public class TaskServlet extends HttpServlet implements Servlet {
                 case "/list":
                     showTaskList(req, resp);
                     break;
-                case "/log":
-                    showTaskList(req, resp);
-                    break;
                 default:
                     req.getRequestDispatcher(req.getContextPath() + "/login.jsp").forward(req, resp);
                     break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to get task list: {}", e.getMessage(), e);
+            sendErrorMessage(resp, e.getMessage());
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String action = req.getServletPath();
         try {
             switch (action) {
@@ -71,27 +72,20 @@ public class TaskServlet extends HttpServlet implements Servlet {
                     resp.sendRedirect(req.getContextPath() + "/list");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to save task: {}", e.getMessage(), e);
+            sendErrorMessage(resp, e.getMessage());
         }
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            updateTask(req, resp);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
+        updateTask(req, resp);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            deleteTask(req, resp);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
+        deleteTask(req, resp);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
@@ -110,28 +104,38 @@ public class TaskServlet extends HttpServlet implements Servlet {
         Long id = Long.parseLong(req.getParameter("id"));
         TaskDTO existingTask = taskService.getTaskById(id);
         req.setAttribute("task", existingTask);
+        req.setAttribute("tagList", existingTask.getTags());
         req.getRequestDispatcher(req.getContextPath() + "/task-form.jsp").forward(req, resp);
     }
 
-    private void saveTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void saveTask(HttpServletRequest req, HttpServletResponse resp) {
         User user = (User) req.getSession().getAttribute("user");
         TaskCommand taskCommand = getObjectFromBody(objectMapper, req, TaskCommand.class);
         try {
             taskService.saveTask(taskCommand, user);
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.setContentType("application/json");
-            resp.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
+            sendErrorMessage(resp, e.getMessage());
         }
     }
 
-    private void updateTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void updateTask(HttpServletRequest req, HttpServletResponse resp) {
         TaskCommand taskCommand = getObjectFromBody(objectMapper, req, TaskCommand.class);
-        taskService.update(taskCommand);
+        try {
+            taskService.update(taskCommand);
+        } catch (Exception e) {
+            log.error("Failed to update task: {}", e.getMessage(), e);
+            sendErrorMessage(resp, e.getMessage());
+        }
     }
 
-    private void deleteTask(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void deleteTask(HttpServletRequest req, HttpServletResponse resp) {
         TaskCommand taskCommand = getObjectFromBody(objectMapper, req, TaskCommand.class);
-        taskService.deleteById(taskCommand.getId());
+        try {
+            taskService.deleteById(taskCommand.getId());
+        } catch (Exception e) {
+            log.error("Failed to delete task: {}", e.getMessage(), e);
+            sendErrorMessage(resp, e.getMessage());
+        }
     }
 }

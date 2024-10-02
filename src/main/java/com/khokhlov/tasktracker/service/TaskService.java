@@ -1,18 +1,21 @@
 package com.khokhlov.tasktracker.service;
 
+import com.khokhlov.tasktracker.exception.TaskNotFoundException;
 import com.khokhlov.tasktracker.mapper.TaskMapper;
 import com.khokhlov.tasktracker.model.command.TaskCommand;
 import com.khokhlov.tasktracker.model.dto.TaskDTO;
 import com.khokhlov.tasktracker.model.entity.Task;
 import com.khokhlov.tasktracker.model.entity.User;
+import com.khokhlov.tasktracker.model.utils.Validator;
 import com.khokhlov.tasktracker.repository.TaskRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
 
-
+@Slf4j
 public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, TaskRepository> {
 
     public TaskService(SessionFactory sessionFactory, TaskRepository taskRepository, TaskMapper taskMapper) {
@@ -34,13 +37,10 @@ public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, Tas
         try (Session session = getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
-            if (taskCommand.getTitle().length() > 30) {
-                throw new IllegalArgumentException("Task title length must be less 30");
-            } else if (taskCommand.getDescription().length() > 90) {
-                throw new IllegalArgumentException("Task description length must be less 90 characters");
-            } else if (taskCommand.getTags().isEmpty()) {
-                throw new IllegalArgumentException("Task must contain at least one tag");
-            }
+            Validator.validateTaskTitle(taskCommand.getTitle());
+            Validator.validateTaskDescription(taskCommand.getDescription());
+            Validator.validateTaskTag(taskCommand.getTags());
+
 
             Task task = getMapper().mapToEntity(taskCommand);
             task.setUser(user);
@@ -49,12 +49,13 @@ public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, Tas
 
             return getMapper().mapToDTO(task);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             try {
                 if (transaction != null) {
                     transaction.rollback();
                 }
             } catch (Exception rollbackException) {
-                rollbackException.printStackTrace();
+                log.error(rollbackException.getMessage(), rollbackException);
             }
             throw e;
         }
@@ -74,10 +75,15 @@ public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, Tas
 
             return mapper.mapToDTO(existingTask);
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
+            log.error(e.getMessage(), e);
+            try {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+            } catch (Exception rollbackException) {
+                log.error(rollbackException.getMessage(), rollbackException);
             }
-            return null;
+            throw e;
         }
     }
 
@@ -85,7 +91,7 @@ public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, Tas
     public TaskDTO getTaskById(Long id) {
         try (Session session = getSessionFactory().openSession()) {
             return getMapper().mapToDTO(getRepository().findById(session, id).orElseThrow(
-                    () -> new RuntimeException("Task not found with id: " + id)));
+                    () -> new TaskNotFoundException("Task not found with id: " + id)));
         }
     }
 }

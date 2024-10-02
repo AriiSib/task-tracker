@@ -27,7 +27,7 @@
         <c:remove var="NOTIFICATION" scope="session"/>
     </c:if>
 
-    <div id="error-message" class="alert alert-danger d-none"></div>
+    <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
 
     <form id="loginForm">
 
@@ -76,24 +76,21 @@
         })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = '/log';
-                } else if (!response.ok) {
-                    return response.json().then(err => {
-                        throw new Error(err.errorMessage || 'Unknown error');
-                    });
+                    window.location.href = '<%=request.getContextPath()%>/list';
+                } else if (response.status === 400) {
+                    return response.json();
                 }
             })
-            .catch(error => {
-                const errorMessage = document.getElementById('error-message');
-                errorMessage.classList.remove('d-none');
-                errorMessage.textContent = error.message;
-            });
+            .then(data => {
+                if (data && data.error) {
+                    const errorMessageElement = document.getElementById('errorMessage');
+                    errorMessageElement.textContent = data.error;
+                    errorMessageElement.style.display = 'block';
+                }
+            })
+            .catch(error => console.error('Error:', error));
     });
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFZ8fcbZJpDLUbXU0IT+8tDEn24AdU6lok9ZZz8z1F4J8VIFl1lbFVG5F3"
-        crossorigin="anonymous"></script>
 </body>
 
 </html>

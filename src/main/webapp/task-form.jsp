@@ -127,7 +127,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="tags" class="form-label">Tags</label>
+            <label for="tagList" class="form-label">Tags</label>
             <input type="text" id="tagInput" class="form-control" placeholder="Add a tag and press Enter">
             <div id="tagList" class="mt-2"></div>
         </div>
