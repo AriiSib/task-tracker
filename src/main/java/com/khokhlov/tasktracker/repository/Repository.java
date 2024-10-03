@@ -35,4 +35,8 @@ public interface Repository<E, ID extends Serializable> {
     default E update(E e, Session session) {
         return session.merge(e);
     }
+
+    default void deleteAll(Session session) {
+        session.createQuery("delete from " + getEntityClass().getSimpleName()).executeUpdate();
+    }
 }

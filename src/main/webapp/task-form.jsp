@@ -8,35 +8,10 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <script>
-        function deleteTask(taskId) {
-            fetch('<%=request.getContextPath()%>/delete', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({id: taskId})
-            })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '<%=request.getContextPath()%>/list';
-                    } else {
-                        alert("Failed to delete the task.");
-                    }
-                })
-                .catch(error => {
-                    alert("An error occurred: " + error.message);
-                });
-        }
-    </script>
-
-    <script>
         let tags = [];
 
         document.addEventListener("DOMContentLoaded", function () {
-            <c:if test="${task.tags != null}">
-            tags = ${task.tags};
             updateTagList();
-            </c:if>
         });
 
         function updateTagList() {
@@ -75,6 +50,27 @@
                 }
             });
         });
+    </script>
+    <script>
+        function deleteTask(taskId) {
+            fetch('<%=request.getContextPath()%>/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({id: taskId})
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '<%=request.getContextPath()%>/list';
+                    } else {
+                        alert("Failed to delete the task.");
+                    }
+                })
+                .catch(error => {
+                    alert("An error occurred: " + error.message);
+                });
+        }
     </script>
 </head>
 <body>
@@ -131,6 +127,12 @@
             <input type="text" id="tagInput" class="form-control" placeholder="Add a tag and press Enter">
             <div id="tagList" class="mt-2"></div>
         </div>
+
+        <c:forEach var="tag" items="${tagList}">
+            <script>
+                tags.push("${tag.name}");
+            </script>
+        </c:forEach>
 
         <input type="hidden" name="id" id="taskId" value="${task.id != null ? task.id : ''}"/>
 

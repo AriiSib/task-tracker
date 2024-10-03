@@ -29,8 +29,7 @@ public class TagServlet extends HttpServlet implements Servlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
-        var tags = tagService.findAll();
-        sendObjectAsJson(objectMapper, response, tags);
+        tagService.findAll();
     }
 
     @Override

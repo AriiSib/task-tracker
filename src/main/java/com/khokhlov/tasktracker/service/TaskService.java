@@ -66,6 +66,10 @@ public class TaskService extends AbstractService<Task, TaskCommand, TaskDTO, Tas
         try (Session session = getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
+            Validator.validateTaskTitle(taskCommand.getTitle());
+            Validator.validateTaskDescription(taskCommand.getDescription());
+            Validator.validateTaskTag(taskCommand.getTags());
+
             TaskMapper mapper = (TaskMapper) getMapper();
 
             Task existingTask = getRepository().findById(session, taskCommand.getId()).orElse(null);

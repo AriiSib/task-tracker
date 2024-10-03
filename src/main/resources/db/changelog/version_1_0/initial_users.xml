@@ -38,7 +38,7 @@
         </createTable>
     </changeSet>
     <changeSet id="1727793036026-2"
-               author="Arii">
+               author="Artemii_Khokhlov">
         <addUniqueConstraint columnNames="username"
                              constraintName="uc_users_username"
                              tableName="users"/>

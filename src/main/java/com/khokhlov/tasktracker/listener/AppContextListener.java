@@ -31,7 +31,10 @@ public class AppContextListener implements ServletContextListener {
         objectMapper.registerModule(new JavaTimeModule());
 
 
-        SessionProvider sessionProvider = new TaskTrackerSessionProvider();
+        SessionProvider sessionProvider = new TaskTrackerSessionProvider(
+                "jdbc:postgresql://localhost:5432/tracker",
+                "arii",
+                "arii");
         SessionFactory sessionFactory = sessionProvider.getSessionFactory();
 
         UserRepository userRepository = new UserRepository();

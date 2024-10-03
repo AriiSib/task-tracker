@@ -26,7 +26,7 @@
             <column name="updated" type="DATETIME"/>
         </createTable>
     </changeSet>
-    <changeSet id="1727792105403-3" author="Arii">
+    <changeSet id="1727792105403-3" author="Artemii_Khokhlov">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="tasks" constraintName="FK_TASKS_ON_USER"
                                  referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>

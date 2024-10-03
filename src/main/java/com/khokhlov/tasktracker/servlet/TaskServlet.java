@@ -80,13 +80,11 @@ public class TaskServlet extends HttpServlet implements Servlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         updateTask(req, resp);
-        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
         deleteTask(req, resp);
-        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     private void showTaskList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -114,6 +112,7 @@ public class TaskServlet extends HttpServlet implements Servlet {
         try {
             taskService.saveTask(taskCommand, user);
         } catch (Exception e) {
+            log.debug("Failed to save task: {}", e.getMessage(), e);
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             sendErrorMessage(resp, e.getMessage());
         }
@@ -123,8 +122,10 @@ public class TaskServlet extends HttpServlet implements Servlet {
         TaskCommand taskCommand = getObjectFromBody(objectMapper, req, TaskCommand.class);
         try {
             taskService.update(taskCommand);
+            resp.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
-            log.error("Failed to update task: {}", e.getMessage(), e);
+            log.debug("Failed to update task: {}", e.getMessage(), e);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             sendErrorMessage(resp, e.getMessage());
         }
     }
@@ -133,8 +134,10 @@ public class TaskServlet extends HttpServlet implements Servlet {
         TaskCommand taskCommand = getObjectFromBody(objectMapper, req, TaskCommand.class);
         try {
             taskService.deleteById(taskCommand.getId());
+            resp.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
-            log.error("Failed to delete task: {}", e.getMessage(), e);
+            log.debug("Failed to delete task: {}", e.getMessage(), e);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             sendErrorMessage(resp, e.getMessage());
         }
     }
