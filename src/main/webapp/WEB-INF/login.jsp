@@ -64,7 +64,7 @@
             password: password
         };
 
-        fetch('/login', {
+        fetch('/task-tracker/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

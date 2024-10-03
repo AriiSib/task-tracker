@@ -6,7 +6,7 @@
 
     <groupId>com.khokhlov</groupId>
     <artifactId>task-tracker</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>task-tracker</name>
     <packaging>war</packaging>
 
@@ -126,6 +126,7 @@
     </dependencies>
 
     <build>
+        <finalName>task-tracker</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -172,6 +173,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
+                <configuration>
+<!--                    <skipTests>true</skipTests>-->
+                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>

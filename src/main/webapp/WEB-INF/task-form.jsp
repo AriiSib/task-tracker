@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>Task Tracker - Task Form</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
@@ -77,7 +78,7 @@
 <header>
     <nav class="navbar navbar-expand-md navbar-dark">
         <div>
-            <a href="https://github.com/AriiSib/task-tracker" class="navbar-brand">Task-tracker App</a>
+            <a href="<%=request.getContextPath()%>/index" class="navbar-brand">Task-tracker App</a>
         </div>
         <ul class="navbar-nav navbar-collapse justify-content-end">
             <li><a href="<%=request.getContextPath()%>/logout" class="nav-link">Logout</a></li>

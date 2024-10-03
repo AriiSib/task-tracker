@@ -3,7 +3,7 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/styles.css">
     <nav class="navbar navbar-expand-md navbar-dark" style="background-color: rgba(31, 31, 31, 0.9);">
         <div>
-            <a href="https://github.com/AriiSib/task-tracker" class="navbar-brand">Task-Tracker App</a>
+            <a href="<%=request.getContextPath()%>/index" class="navbar-brand">Task-Tracker App</a>
         </div>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item">

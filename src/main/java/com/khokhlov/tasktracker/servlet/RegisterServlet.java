@@ -27,15 +27,19 @@ public class RegisterServlet extends HttpServlet implements Servlet {
         ServletContext context = config.getServletContext();
         userService = (UserService) context.getAttribute(USER_SERVICE);
         objectMapper = (ObjectMapper) context.getAttribute(OBJECT_MAPPER);
+
         log.debug("RegisterServlet initialized");
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            req.getRequestDispatcher("/WEB-INF/register.jsp").forward(req, resp);
         } catch (Exception e) {
             log.error("An error occurred while processing /register.jsp: {}", e.getMessage(), e);
+
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            sendErrorMessage(resp, e.getMessage());
         }
     }
 
@@ -61,7 +65,6 @@ public class RegisterServlet extends HttpServlet implements Servlet {
             log.error("An error occurred during user registration: {}", e.getMessage(), e);
 
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
             sendErrorMessage(resp, e.getMessage());
         }
     }

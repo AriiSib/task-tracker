@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <style>
-    <%@include file="css/styles.css"%>
+    <%@include file="../css/styles.css"%>
 </style>
 <footer class="footer">
     <div class="footer-copyright">

@@ -23,6 +23,7 @@ public interface Servlet {
             out.flush();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
+
             throw new SendJsonException("Failed to send json: " + e.getMessage());
         }
     }
@@ -32,6 +33,7 @@ public interface Servlet {
             return objectMapper.readValue(req.getInputStream(), valueType);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
+
             throw new GetObjectFromJsonException("Failed to create object from json: " + e.getMessage());
         }
     }
