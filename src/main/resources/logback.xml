@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-    <!--    <statusListener class="ch.qos.logback.core.status.OnErrorConsoleStatusListener"/>-->
+    <!--    <statusListener class="ch.qos.logback.core.status.OnErrorConsoleStatusListener"/>-->  <!--logback debugging -->
 
     <property name="LOG_DIR" value="logs"/>
 
@@ -27,7 +27,7 @@
     </appender>
 
     <root level="info">
-<!--        <appender-ref ref="ROLLING_FILE"/>-->
+        <!--        <appender-ref ref="ROLLING_FILE"/>--> <!-- write logs to files -->
         <appender-ref ref="CONSOLE"/>
     </root>
 </configuration>

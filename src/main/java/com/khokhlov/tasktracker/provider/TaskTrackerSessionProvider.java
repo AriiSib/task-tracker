@@ -10,13 +10,12 @@ import org.hibernate.cfg.Configuration;
 
 import java.util.Properties;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class TaskTrackerSessionProvider implements SessionProvider {
     private String url;
     private String username;
     private String password;
-
 
     @Override
     public SessionFactory getSessionFactory() {

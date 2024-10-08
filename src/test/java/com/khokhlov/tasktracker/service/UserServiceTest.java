@@ -34,7 +34,7 @@ class UserServiceTest {
     private static Liquibase liquibase;
     private static Connection connection;
 
-    static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:16")
+    static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:16-alpine")
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");
@@ -93,7 +93,8 @@ class UserServiceTest {
     @Test
     @Order(1)
     void should_SaveUser_When_UserIsValid() {
-        UserCommand userCommand = new UserCommand("testName", "testLastName", "validUsername", "123");
+        UserCommand userCommand =
+                new UserCommand("testName", "testLastName", "validUsername", "123");
 
         UserDTO savedUser = userService.save(userCommand);
         UserDTO expectedUser = new UserDTO(1L, "testName", "testLastName");
@@ -105,10 +106,12 @@ class UserServiceTest {
     @Test
     @Order(2)
     void should_ThrowException_When_UsernameAlreadyExists() {
-        UserCommand userCommand = new UserCommand("testName", "testLastName", "validUsername", "123");
+        UserCommand userCommand =
+                new UserCommand("testName", "testLastName", "validUsername", "123");
         userService.save(userCommand);
 
-        UserCommand duplicateUserCommand = new UserCommand("testName", "testLastName", "validUsername", "123");
+        UserCommand duplicateUserCommand =
+                new UserCommand("testName", "testLastName", "validUsername", "123");
 
         assertThrows(UserAlreadyExistsException.class, () -> {
             userService.save(duplicateUserCommand);

@@ -59,5 +59,4 @@
     <a href="<%= request.getContextPath() %>/login" class="start-button">Start</a>
 </div>
 </body>
-
 </html>

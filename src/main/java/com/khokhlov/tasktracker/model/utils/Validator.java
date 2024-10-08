@@ -1,8 +1,8 @@
 package com.khokhlov.tasktracker.model.utils;
 
-import com.khokhlov.tasktracker.exception.InvalidLoginOrPassword;
-import com.khokhlov.tasktracker.exception.InvalidPassword;
-import com.khokhlov.tasktracker.exception.InvalidUsername;
+import com.khokhlov.tasktracker.exception.InvalidLoginOrPasswordException;
+import com.khokhlov.tasktracker.exception.InvalidPasswordException;
+import com.khokhlov.tasktracker.exception.InvalidUsernameException;
 import com.khokhlov.tasktracker.exception.UserAlreadyExistsException;
 import com.khokhlov.tasktracker.model.entity.Tag;
 import com.khokhlov.tasktracker.model.entity.User;
@@ -34,13 +34,13 @@ public class Validator {
 
     public static void validateUsernameLength(String name) {
         if (name.length() > 20) {
-            throw new InvalidUsername("Username too long");
+            throw new InvalidUsernameException("Username too long");
         }
     }
 
     public static void validatePasswordLength(String password) {
         if (password.length() > 16) {
-            throw new InvalidPassword("Password length must be less than 16");
+            throw new InvalidPasswordException("Password length must be less than 16");
         }
     }
 
@@ -70,7 +70,7 @@ public class Validator {
 
     public static void validateAuthenticate(User user) {
         if (user == null) {
-            throw new InvalidLoginOrPassword("Invalid login or password");
+            throw new InvalidLoginOrPasswordException("Invalid login or password");
         }
     }
 }

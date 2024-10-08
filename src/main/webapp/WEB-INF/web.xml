@@ -6,6 +6,10 @@
 
     <display-name>Task-tracker Management Web Application</display-name>
 
+    <welcome-file-list>
+        <welcome-file>/WEB-INF/index.jsp</welcome-file>
+    </welcome-file-list>
+
     <error-page>
         <exception-type>java.lang.Exception</exception-type>
         <location>/WEB-INF/error.jsp</location>

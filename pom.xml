@@ -161,6 +161,10 @@
                 <version>${liquibase-core.version}</version>
                 <configuration>
                     <propertyFile>src/main/resources/liquibase.properties</propertyFile>
+                    <changeLogFile>src/main/resources/db/changelog/changelog.xml</changeLogFile>
+                    <url>${DB_URL}</url>
+                    <username>${DB_USERNAME}</username>
+                    <password>${DB_PASSWORD}</password>
                 </configuration>
             </plugin>
 

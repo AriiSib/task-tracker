@@ -78,7 +78,7 @@
 <header>
     <nav class="navbar navbar-expand-md navbar-dark">
         <div>
-            <a href="<%=request.getContextPath()%>/index" class="navbar-brand">Task-tracker App</a>
+            <a href="<%=request.getContextPath()%>/start" class="navbar-brand">Task-tracker App</a>
         </div>
         <ul class="navbar-nav navbar-collapse justify-content-end">
             <li><a href="<%=request.getContextPath()%>/logout" class="nav-link">Logout</a></li>
@@ -86,67 +86,65 @@
     </nav>
 </header>
 
-<div class="container mt-5">
-    <h3 class="text-center">Task Form</h3>
+<div class="container mt-5 mt-5-custom">
+    <div class="form-container">
+        <h3 class="text-center">Task Form</h3>
 
-    <div id="errorMessages" class="alert alert-danger d-none"></div>
+        <div id="errorMessages" class="alert alert-danger d-none"></div>
 
-    <form id="taskForm" onsubmit="return false;">
-        <div class="mb-3">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" id="title" name="title" class="form-control" required
-                   value="${task.title != null ? task.title : ''}">
-        </div>
+        <form id="taskForm" onsubmit="return false;">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" id="title" name="title" class="form-control" required
+                       value="${task.title != null ? task.title : ''}">
+            </div>
 
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea id="description" name="description"
-                      class="form-control">${task.description != null ? task.description : ''}</textarea>
-        </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" name="description"
+                          class="form-control">${task.description != null ? task.description : ''}</textarea>
+            </div>
 
-        <div class="mb-3">
-            <label for="targetDate" class="form-label">Target Date</label>
-            <input type="date" id="targetDate" name="targetDate" class="form-control" required
-                   value="${task.targetDate != null ? task.targetDate : ''}">
-        </div>
+            <div class="mb-3">
+                <label for="targetDate" class="form-label">Target Date</label>
+                <input type="date" id="targetDate" name="targetDate" class="form-control" required
+                       value="${task.targetDate != null ? task.targetDate : ''}">
+            </div>
 
-        <div class="mb-3">
-            <label for="status" class="form-label">Status</label>
-            <select id="status" name="status" class="form-select">
-                <option value="NOT_STARTED" <c:if test="${task.status.getName() eq 'NOT_STARTED'}">selected</c:if>>Not
-                    Started
-                </option>
-                <option value="IN_PROGRESS" <c:if test="${task.status.getName() eq 'IN_PROGRESS'}">selected</c:if>>In
-                    Progress
-                </option>
-                <option value="DONE" <c:if test="${task.status.getName() eq 'DONE'}">selected</c:if>>Done</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status" class="form-control">
+                    <option value="NOT_STARTED">Not Started</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="DONE">Done</option>
+                </select>
+            </div>
 
-        <div class="mb-3">
-            <label for="tagList" class="form-label">Tags</label>
-            <input type="text" id="tagInput" class="form-control" placeholder="Add a tag and press Enter">
-            <div id="tagList" class="mt-2"></div>
-        </div>
+            <div class="mb-3">
+                <label for="tagList" class="form-label">Tags</label>
+                <input type="text" id="tagInput" class="form-control" placeholder="Add a tag and press Enter">
+                <div id="tagList" class="mt-2"></div>
+            </div>
 
-        <c:forEach var="tag" items="${tagList}">
-            <script>
-                tags.push("${tag.name}");
-            </script>
-        </c:forEach>
+            <c:forEach var="tag" items="${tagList}">
+                <script>
+                    tags.push("${tag.name}");
+                </script>
+            </c:forEach>
 
-        <input type="hidden" name="id" id="taskId" value="${task.id != null ? task.id : ''}"/>
+            <input type="hidden" name="id" id="taskId" value="${task.id != null ? task.id : ''}"/>
 
-        <button type="button" class="btn btn-primary" id="saveTaskButton">
-            ${task.id != null ? 'Update Task' : 'Save Task'}
-        </button>
+            <button type="button" class="btn btn-primary" id="saveTaskButton">
+                ${task.id != null ? 'Update Task' : 'Save Task'}
+            </button>
 
-        <c:if test="${task.id != null}">
-            <button type="button" class="btn btn-danger" onclick="deleteTask(${task.id})">Delete Task</button>
-        </c:if>
-
-    </form>
+            <c:if test="${task.id != null}">
+                <button type="button" class="btn btn-danger" onclick="deleteTask(${task.id})">Delete Task</button>
+            </c:if>
+        </form>
+    </div>
 </div>
+
 
 <jsp:include page="footer.jsp"/>
 
@@ -190,6 +188,5 @@
             });
     });
 </script>
-
 </body>
 </html>

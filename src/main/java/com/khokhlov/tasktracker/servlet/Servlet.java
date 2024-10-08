@@ -2,7 +2,7 @@ package com.khokhlov.tasktracker.servlet;
 
 import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.khokhlov.tasktracker.exception.CriticalError;
+import com.khokhlov.tasktracker.exception.CriticalErrorException;
 import com.khokhlov.tasktracker.exception.GetObjectFromJsonException;
 import com.khokhlov.tasktracker.exception.SendJsonException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ public interface Servlet {
         } catch (IOException ex) {
             log.error("Critical error! Failed to send error message: {}", ex.getMessage(), ex);
 
-            throw new CriticalError("A critical error occurred during program execution!");
+            throw new CriticalErrorException("A critical error occurred during program execution!");
         }
     }
 }

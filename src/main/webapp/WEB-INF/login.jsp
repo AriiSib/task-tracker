@@ -30,7 +30,6 @@
     <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
 
     <form id="loginForm">
-
         <div class="mb-3">
             <label for="username" class="form-label">User Name:</label>
             <input type="text" class="form-control" id="username" placeholder="Enter your username" name="username"
@@ -43,10 +42,7 @@
                    required>
         </div>
 
-        <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary btn-block">Submit</button>
-        </div>
-
+        <button type="submit" class="btn-custom">Submit</button>
     </form>
 </div>
 
@@ -92,5 +88,4 @@
     });
 </script>
 </body>
-
 </html>

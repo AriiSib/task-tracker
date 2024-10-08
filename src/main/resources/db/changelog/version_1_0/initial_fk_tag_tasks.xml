@@ -10,5 +10,4 @@
         <addForeignKeyConstraint baseColumnNames="tagId" baseTableName="task_tag" constraintName="fk_task_tag_on_tag"
                                  referencedColumnNames="id" referencedTableName="tags"/>
     </changeSet>
-
 </databaseChangeLog>

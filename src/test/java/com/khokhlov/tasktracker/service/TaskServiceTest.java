@@ -46,7 +46,7 @@ class TaskServiceTest {
     private static Connection connection;
     private static User user;
 
-    static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:16")
+    static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:16-alpine")
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");
@@ -113,10 +113,14 @@ class TaskServiceTest {
     void should_SaveTask_When_ProvideValidData() {
         HashSet<Tag> tags = new HashSet<>();
         tags.add(new Tag("testTag"));
-        TaskCommand taskCommand = new TaskCommand(null, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
+        TaskCommand taskCommand =
+                new TaskCommand(null, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
+
         TaskDTO savedTask = taskService.saveTask(taskCommand, user);
 
-        TaskDTO expectedTask = new TaskDTO(1L, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
+        TaskDTO expectedTask =
+                new TaskDTO(1L, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
+
         assertNotNull(savedTask);
         assertEquals(expectedTask, savedTask);
     }
@@ -126,7 +130,8 @@ class TaskServiceTest {
     void should_ReturnTask_When_ProvideExistingUser() {
         HashSet<Tag> tags = new HashSet<>();
         tags.add(new Tag("testTag"));
-        TaskCommand taskCommand = new TaskCommand(null, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
+        TaskCommand taskCommand =
+                new TaskCommand(null, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
 
         TaskDTO savedTask = taskService.saveTask(taskCommand, user);
         List<TaskDTO> taskList = taskService.findAllTasksByUsername(user.getUsername());
@@ -140,8 +145,10 @@ class TaskServiceTest {
     void should_UpdateTask_When_ProvideValidData() {
         HashSet<Tag> tags = new HashSet<>();
         tags.add(new Tag("testTag"));
-        TaskCommand taskCommand = new TaskCommand(null, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
-        TaskCommand taskUpdate = new TaskCommand(3L, "testAnotherTitle", "testAnotherDescription", LocalDate.now(), TaskStatus.DONE, tags);
+        TaskCommand taskCommand =
+                new TaskCommand(null, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
+        TaskCommand taskUpdate =
+                new TaskCommand(3L, "testAnotherTitle", "testAnotherDescription", LocalDate.now(), TaskStatus.DONE, tags);
 
         taskService.saveTask(taskCommand, user);
         TaskDTO updatedTask = taskService.update(taskUpdate);
@@ -156,7 +163,8 @@ class TaskServiceTest {
     void should_ReturnTask_When_ProvidedValidTaskId() {
         HashSet<Tag> tags = new HashSet<>();
         tags.add(new Tag("testTag"));
-        TaskCommand taskCommand = new TaskCommand(null, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
+        TaskCommand taskCommand =
+                new TaskCommand(null, "testTitle", "testDescription", LocalDate.now(), TaskStatus.NOT_STARTED, tags);
 
         TaskDTO expectedTask = taskService.saveTask(taskCommand, user);
         TaskDTO actualTask = taskService.getTaskById(4L);

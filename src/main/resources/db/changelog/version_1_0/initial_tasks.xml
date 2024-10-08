@@ -30,5 +30,4 @@
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="tasks" constraintName="FK_TASKS_ON_USER"
                                  referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
-
 </databaseChangeLog>

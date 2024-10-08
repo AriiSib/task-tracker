@@ -16,15 +16,16 @@
 <header>
     <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #2b2b2b;">
         <div>
-            <a href="<%=request.getContextPath()%>/index" class="navbar-brand"
+            <a href="<%=request.getContextPath()%>/start" class="navbar-brand"
                style="font-weight: bold; color: #ffffff;">
                 Task-Tracker App
             </a>
         </div>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-                <form id="logout-form" action="<%=request.getContextPath()%>/logout" method="POST" style="display: inline;">
-                    <button type="submit" class="nav-link btn btn-link" style="color: #ffffff; text-decoration: none; padding: 0;">Logout</button>
+                <form id="logout-form" action="<%=request.getContextPath()%>/logout" method="POST"
+                      style="display: inline;">
+                    <button type="submit" class="nav-link btn btn-link logout-link">Logout</button>
                 </form>
             </li>
         </ul>
@@ -102,5 +103,6 @@
 </div>
 
 <jsp:include page="footer.jsp"/>
+
 </body>
 </html>

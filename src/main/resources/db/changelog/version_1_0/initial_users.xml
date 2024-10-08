@@ -43,5 +43,4 @@
                              constraintName="uc_users_username"
                              tableName="users"/>
     </changeSet>
-
 </databaseChangeLog>

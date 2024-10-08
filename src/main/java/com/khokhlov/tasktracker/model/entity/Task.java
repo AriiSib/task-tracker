@@ -43,7 +43,6 @@ public class Task implements com.khokhlov.tasktracker.model.entity.Entity, Seria
     )
     private Set<Tag> tags;
 
-
     @Column
     private String description;
 

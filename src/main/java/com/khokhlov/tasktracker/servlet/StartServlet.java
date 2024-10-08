@@ -10,13 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@WebServlet(name = "indexServlet", value = "/index")
-public class IndexServlet extends HttpServlet implements Servlet {
+@WebServlet(name = "startServlet", value = "/start")
+public class StartServlet extends HttpServlet implements Servlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
-        log.debug("IndexServlet initialized");
+        log.debug("StartServlet initialized");
     }
 
     @Override
