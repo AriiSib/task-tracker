@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+
+  db:
+    container_name: db
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "postgres"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - tracker-network
+
+
+  liquibase:
+    container_name: task-tracker-liquibase
+    image: ariisib/task-tracker-liquibase:latest
+    environment:
+      DB_URL: "jdbc:postgresql://db:5432/postgres"
+      DB_USERNAME: "admin"
+      DB_PASSWORD: "admin"
+    depends_on:
+      - db
+    networks:
+      - tracker-network
+
+  task-tracker:
+    container_name: task-tracker
+    image: ariisib/task-tracker:latest
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: "jdbc:postgresql://db:5432/postgres"
+      DB_USERNAME: "admin"
+      DB_PASSWORD: "admin"
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+
+    networks:
+      - tracker-network
+
+networks:
+  tracker-network:
